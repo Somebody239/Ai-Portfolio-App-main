@@ -42,7 +42,7 @@ export class UserTargetsRepository {
     });
 
     // 5. Combine
-    return targets.map((target: any) => {
+    const mappedTargets: (UserTargetWithUniversity | null)[] = targets.map((target: any) => {
       // Try to find the university. ID in target is string, ID in map is number.
       const uniId = Number(target.university_id);
       const university = uniMap.get(uniId);
@@ -63,9 +63,11 @@ export class UserTargetsRepository {
         university_id: uniId,
         university,
         reason_for_interest: target.reason_for_interest || undefined,
-        created_at: target.created_at || null,
+        created_at: target.created_at,
       };
-    }).filter((t: any): t is UserTargetWithUniversity => t !== null);
+    });
+
+    return mappedTargets.filter((target): target is UserTargetWithUniversity => target !== null);
   }
 
   /** Create a new target */

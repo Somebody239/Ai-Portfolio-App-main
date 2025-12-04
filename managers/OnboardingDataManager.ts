@@ -37,9 +37,9 @@ export class OnboardingDataManager {
     const satScore = data.satScore
       ? InputSanitizer.sanitizeNumber(data.satScore, 400, 1600)
       : null;
-    const universityId = InputSanitizer.sanitizeUUID(data.dreamUniversity);
+    const universityId = parseInt(data.dreamUniversity, 10);
 
-    if (!universityId) {
+    if (isNaN(universityId)) {
       throw new Error("Invalid university ID");
     }
 

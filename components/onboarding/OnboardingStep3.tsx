@@ -66,7 +66,7 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
 }) => {
   const { universities, loading: universitiesLoading } = useUniversities();
   const universitiesRepo = new UniversitiesRepository();
-  const [selected, setSelected] = useState<string>("");
+  const [selected, setSelected] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -84,7 +84,7 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
   const filteredUniversities = allUniversities.filter(
     (uni) =>
       uni.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      uni.country.toLowerCase().includes(searchQuery.toLowerCase())
+      (uni.country?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   const hasNoMatches =
@@ -93,62 +93,19 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
     !showCreateForm;
 
   const handleCreateUniversity = async () => {
-    const sanitizedName = InputSanitizer.sanitizeString(newUniversityName);
-    const sanitizedCountry = InputSanitizer.sanitizeString(newUniversityCountry);
-
-    if (!sanitizedName || !sanitizedCountry) {
-      setError("Please provide both university name and country.");
-      return;
-    }
-
-    setIsCreating(true);
-    setError("");
-
-    try {
-      const existing = allUniversities.find(
-        (uni) => uni.name.toLowerCase() === sanitizedName.toLowerCase()
-      );
-
-      if (existing) {
-        setSelected(existing.id);
-        setShowCreateForm(false);
-        setNewUniversityName("");
-        setNewUniversityCountry("");
-        setIsCreating(false);
-        return;
-      }
-
-      const newUniversity = await universitiesRepo.create({
-        name: sanitizedName,
-        country: sanitizedCountry,
-        avg_gpa: 0,
-        avg_sat: 0,
-        avg_act: 0,
-        acceptance_rate: 0,
-        tuition: 0,
-      });
-
-      setAllUniversities([...allUniversities, newUniversity]);
-      setSelected(newUniversity.id);
-      setShowCreateForm(false);
-      setNewUniversityName("");
-      setNewUniversityCountry("");
-      setSearchQuery(newUniversity.name);
-    } catch (err: any) {
-      console.error("Error creating university:", err);
-      setError(err.message || "Failed to create university. Please try again.");
-    } finally {
-      setIsCreating(false);
-    }
+    // University creation is not supported with the read-only dataset
+    // Just show an error message
+    setError("Please select from the existing universities. Adding custom universities is not supported.");
+    setIsCreating(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selected) {
+    if (selected === null) {
       setError("Please select a dream university to start.");
       return;
     }
-    onNext({ dreamUniversity: selected });
+    onNext({ dreamUniversity: selected.toString() });
   };
 
   if (isSubmitting) {
@@ -303,7 +260,7 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
               <SelectCard
                 key={uni.id}
                 title={uni.name}
-                subtitle={uni.country}
+                subtitle={uni.country || "Unknown"}
                 selected={selected === uni.id}
                 onClick={() => {
                   setSelected(uni.id);

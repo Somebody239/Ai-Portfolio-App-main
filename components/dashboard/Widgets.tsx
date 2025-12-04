@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
 import { Card, Badge } from "@/components/ui/Atoms";
 import { University, AIRecommendation } from "@/lib/types";
 
