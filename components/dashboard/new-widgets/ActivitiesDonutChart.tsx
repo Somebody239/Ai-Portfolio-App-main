@@ -14,9 +14,9 @@ export const ActivitiesDonutChart: React.FC<ActivitiesDonutChartProps> = ({
     activityHours
 }) => {
     const data = [
-        { name: 'Leadership', value: activityHours.leadership, color: '#FF6B35' }, // Orange to match theme
-        { name: 'Service', value: activityHours.service, color: '#10B981' }, // Green
-        { name: 'Other', value: activityHours.other, color: '#3B82F6' }, // Blue
+        { name: 'Leadership', value: activityHours.leadership, color: '#fcd34d' }, // Amber 300
+        { name: 'Service', value: activityHours.service, color: '#10B981' }, // Emerald
+        { name: 'Other', value: activityHours.other, color: '#059669' }, // Emerald-600
     ].filter(d => d.value > 0);
 
     // Fallback if no data

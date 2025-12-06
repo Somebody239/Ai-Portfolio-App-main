@@ -4,11 +4,11 @@ const nextConfig = {
   swcMinify: true,
   compress: true,
   poweredByHeader: false, // Security: Remove X-Powered-By header
-  
+
   // Security headers
   async headers() {
     const isDev = process.env.NODE_ENV === 'development';
-    
+
     return [
       {
         source: '/:path*',
@@ -45,23 +45,23 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: isDev
               ? [
-                  "default-src 'self'",
-                  "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' http://localhost:* https://localhost:* http://127.0.0.1:* https://127.0.0.1:* chrome-extension:",
-                  "style-src 'self' 'unsafe-inline'",
-                  "img-src 'self' data: https: http:",
-                  "font-src 'self' data:",
-                  "connect-src 'self' https: http: ws: wss:",
-                  "frame-src 'self'",
-                ].join('; ')
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' http://localhost:* https://localhost:* http://127.0.0.1:* https://127.0.0.1:* chrome-extension:",
+                "style-src 'self' 'unsafe-inline'",
+                "img-src 'self' data: https: http:",
+                "font-src 'self' data:",
+                "connect-src 'self' https: http: ws: wss:",
+                "frame-src 'self'",
+              ].join('; ')
               : [
-                  "default-src 'self'",
-                  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-                  "style-src 'self' 'unsafe-inline'",
-                  "img-src 'self' data: https:",
-                  "font-src 'self' data:",
-                  "connect-src 'self' https:",
-                  "frame-src 'self'",
-                ].join('; '),
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+                "style-src 'self' 'unsafe-inline'",
+                "img-src 'self' data: https:",
+                "font-src 'self' data:",
+                "connect-src 'self' https:",
+                "frame-src 'self'",
+              ].join('; '),
           },
         ],
       },
@@ -70,6 +70,7 @@ const nextConfig = {
 
   // Optimize images
   images: {
+    domains: ['images.unsplash.com'],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

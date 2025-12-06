@@ -18,11 +18,11 @@ export class PersonalityManager {
         return await this.repository.getByUserId(userId);
     }
 
-    async saveAnswer(userId: string, question: string, answer: string): Promise<PersonalityInput> {
+    async saveAnswer(userId: string, question: string, answer: string, isCustom: boolean = false): Promise<PersonalityInput> {
         if (!answer.trim()) {
             throw new Error("Answer cannot be empty");
         }
-        return await this.repository.upsert(userId, question, answer);
+        return await this.repository.upsert(userId, question, answer, isCustom);
     }
 
     getQuestions(): string[] {

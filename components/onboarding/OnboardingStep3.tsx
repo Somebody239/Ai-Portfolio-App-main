@@ -66,7 +66,7 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
 }) => {
   const { universities, loading: universitiesLoading } = useUniversities();
   const universitiesRepo = new UniversitiesRepository();
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number[]>([]);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -101,11 +101,11 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (selected === null) {
-      setError("Please select a dream university to start.");
+    if (selected.length === 0) {
+      setError("Please select at least one university to start.");
       return;
     }
-    onNext({ dreamUniversity: selected.toString() });
+    onNext({ dreamUniversities: selected.map(id => id.toString()) });
   };
 
   if (isSubmitting) {
@@ -136,11 +136,10 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
           <School className="text-zinc-400" />
         </div>
         <h2 className="text-2xl font-semibold tracking-tight text-white">
-          The Goal
+          Target Universities
         </h2>
         <p className="text-zinc-500 text-sm">
-          Pick one &quot;Dream School&quot; to start your dashboard. You can add more
-          later.
+          Select your target universities ({selected.length} selected)
         </p>
       </div>
 
@@ -261,9 +260,13 @@ export const OnboardingStep3: React.FC<OnboardingStep3Props> = ({
                 key={uni.id}
                 title={uni.name}
                 subtitle={uni.country || "Unknown"}
-                selected={selected === uni.id}
+                selected={selected.includes(uni.id)}
                 onClick={() => {
-                  setSelected(uni.id);
+                  setSelected(prev =>
+                    prev.includes(uni.id)
+                      ? prev.filter(id => id !== uni.id)
+                      : [...prev, uni.id]
+                  );
                   setError("");
                 }}
               />

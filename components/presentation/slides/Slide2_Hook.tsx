@@ -10,7 +10,7 @@ export default function Slide2_Hook() {
         { Icon: StickyNote, color: "text-yellow-400", x: 250, y: -100, rotate: 10, scale: 1.1 },
         { Icon: File, color: "text-red-400", x: -150, y: 180, rotate: -20, scale: 1.3 },
         { Icon: GraduationCap, color: "text-purple-400", x: 200, y: 150, rotate: 15, scale: 1.2 },
-        { Icon: AlertCircle, color: "text-orange-400", x: 0, y: -200, rotate: 5, scale: 1 },
+        { Icon: AlertCircle, color: "text-amber-400", x: 0, y: -200, rotate: 5, scale: 1 },
         { Icon: FolderOpen, color: "text-emerald-400", x: -250, y: 50, rotate: -10, scale: 1.1 },
     ];
 

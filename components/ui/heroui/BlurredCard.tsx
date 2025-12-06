@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Card, CardHeader, CardFooter, Image, Button } from "@heroui/react";
 import { cn } from "@/lib/utils";
 
 interface BlurredCardProps {
@@ -24,33 +23,35 @@ export function BlurredCard({
     onClick
 }: BlurredCardProps) {
     return (
-        <Card
-            isFooterBlurred
-            className={cn("w-full h-[300px] col-span-12 sm:col-span-5 border-none bg-zinc-900/50", className)}
-            radius="lg"
-            isPressable={!!onClick}
-            onPress={onClick}
+        <div
+            onClick={onClick}
+            className={cn(
+                "relative w-full h-[300px] overflow-hidden rounded-xl bg-zinc-900/50 border border-zinc-800 transition-all",
+                onClick && "cursor-pointer hover:border-zinc-700 active:scale-95",
+                className
+            )}
         >
-            <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                {subtitle && <p className="text-tiny text-white/60 uppercase font-bold">{subtitle}</p>}
+            <div className="absolute z-10 top-0 left-0 right-0 p-6 flex flex-col items-start bg-gradient-to-b from-black/80 to-transparent">
+                {subtitle && <p className="text-[10px] tracking-wider text-white/60 uppercase font-bold mb-1">{subtitle}</p>}
                 <h4 className="text-white font-medium text-2xl">{title}</h4>
-                {description && <p className="text-zinc-400 text-sm mt-2">{description}</p>}
-            </CardHeader>
+                {description && <p className="text-zinc-300 text-sm mt-2 line-clamp-2">{description}</p>}
+            </div>
 
             {imageSrc && (
-                <Image
-                    removeWrapper
-                    alt="Card background"
-                    className="z-0 w-full h-full scale-125 -translate-y-6 object-cover opacity-50"
-                    src={imageSrc}
-                />
+                <div className="absolute inset-0 z-0">
+                    <img
+                        alt="Card background"
+                        className="w-full h-full object-cover opacity-50 scale-110"
+                        src={imageSrc}
+                    />
+                </div>
             )}
 
             {footerContent && (
-                <CardFooter className="absolute bg-white/10 bottom-0 border-t-1 border-zinc-100/20 z-10 justify-between">
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/40 backdrop-blur-md border-t border-white/10 z-10 flex justify-between items-center">
                     {footerContent}
-                </CardFooter>
+                </div>
             )}
-        </Card>
+        </div>
     );
 }

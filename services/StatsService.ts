@@ -77,6 +77,17 @@ export class StatsService {
     if (acceptanceRate < 0.15) score -= 2; // Ivy logic (< 15%)
     else if (acceptanceRate < 0.30) score -= 1; // Competitive (< 30%)
 
+    // Hard caps for highly selective schools
+    if (acceptanceRate < 0.12) {
+      // For schools with < 12% acceptance, it's never a Safety or Target
+      return score >= 2 ? "Reach" : "High Reach";
+    }
+
+    if (acceptanceRate < 0.25) {
+      // For schools with < 25% acceptance, it's never a Safety
+      if (score >= 3) return "Target";
+    }
+
     if (score >= 3) return "Safety";
     if (score >= 0) return "Target";
     if (score >= -2) return "Reach";

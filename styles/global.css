@@ -3,6 +3,28 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 240 10% 3.9%; /* zinc-950 */
+    --foreground: 240 4.8% 95.9%; /* zinc-50 */
+    --card: 240 10% 3.9%;
+    --card-foreground: 240 4.8% 95.9%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 240 4.8% 95.9%;
+    --primary: 158 64% 52%; /* emerald-400 */
+    --primary-foreground: 144 19% 10%; /* emerald-950 */
+    --secondary: 45 93% 47%; /* amber-400 */
+    --secondary-foreground: 20 14% 4%; /* amber-950 */
+    --muted: 240 3.7% 15.9%; /* zinc-800 */
+    --muted-foreground: 240 5% 64.9%; /* zinc-400 */
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 240 4.8% 95.9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%; /* zinc-800 */
+    --input: 240 3.7% 15.9%;
+    --ring: 142.1 76.2% 36.3%;
+  }
+
   html,
   body,
   #__next {
@@ -12,7 +34,6 @@
   body {
     margin: 0;
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background-color: #000;
-    color: #e5e7eb;
+    @apply bg-zinc-950 text-zinc-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200;
   }
 }

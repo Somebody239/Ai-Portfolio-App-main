@@ -22,28 +22,33 @@ export function UniversitySearchForm({ onSelect, excludeIds = [] }: UniversitySe
   const repository = new UniversitiesRepository();
 
   useEffect(() => {
-    loadUniversities();
+    searchUniversities(debouncedSearchQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [debouncedSearchQuery]);
 
-  const loadUniversities = async () => {
+  const searchUniversities = async (query: string) => {
     setIsLoading(true);
     setError(null);
-
     try {
-      const data = await repository.getAll();
+      let data: University[] = [];
+
+      if (!query.trim()) {
+        // If empty query, load top/default universities
+        data = await repository.search('');
+      } else {
+        // Perform server-side search
+        data = await repository.search(query);
+      }
+
       const filtered = data.filter((uni) => !excludeIds.includes(uni.id));
       setUniversities(filtered);
     } catch (err) {
+      console.error(err);
       setError("Failed to load universities");
     } finally {
       setIsLoading(false);
     }
   };
-
-  const filteredUniversities = universities.filter((uni) =>
-    uni.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-  );
 
   return (
     <div className="space-y-4">
@@ -63,12 +68,12 @@ export function UniversitySearchForm({ onSelect, excludeIds = [] }: UniversitySe
         <div className="text-center py-8 text-zinc-500">Loading universities...</div>
       ) : (
         <div className="max-h-[400px] overflow-y-auto space-y-2">
-          {filteredUniversities.length === 0 ? (
+          {universities.length === 0 ? (
             <div className="text-center py-8 text-zinc-500">
               {searchQuery ? "No universities found" : "No universities available"}
             </div>
           ) : (
-            filteredUniversities.map((uni) => (
+            universities.map((uni) => (
               <button
                 key={uni.id}
                 type="button"
@@ -78,12 +83,20 @@ export function UniversitySearchForm({ onSelect, excludeIds = [] }: UniversitySe
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0 overflow-hidden">
                     <h4 className="text-sm font-medium text-white truncate">{uni.name}</h4>
-                    <p className="text-xs text-zinc-500 mt-1 truncate">{uni.country}</p>
+                    {/* Added City/State context */}
+                    <p className="text-xs text-zinc-500 mt-1 truncate">
+                      {uni.city ? `${uni.city}, ` : ''}{uni.state || uni.country}
+                    </p>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-xs text-zinc-500">Acceptance Rate</p>
                     <p className="text-sm font-medium text-white">
-                      {uni.acceptance_rate != null ? `${uni.acceptance_rate.toFixed(1)}%` : 'N/A'}
+                      {/* Smart Formatting Logic */}
+                      {uni.acceptance_rate != null
+                        ? (uni.acceptance_rate > 1
+                          ? `${uni.acceptance_rate.toFixed(1)}%`
+                          : `${(uni.acceptance_rate * 100).toFixed(1)}%`)
+                        : 'N/A'}
                     </p>
                   </div>
                 </div>

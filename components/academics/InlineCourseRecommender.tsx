@@ -2,19 +2,20 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/Button";
 import { Sparkles, Check, X, Plus } from "lucide-react";
 import { BlurredCard } from "@/components/ui/heroui/BlurredCard";
 import { LoadingSkeleton } from "@/components/ui/heroui/LoadingSkeleton";
 import { DifficultyChip } from "@/components/ui/heroui/DifficultyChip";
 import { AIManager } from "@/managers/AIManager";
+import { toast } from "sonner";
+
 interface CourseRecommendation {
     course_name: string;
     reasoning: string;
     difficulty: string;
     relevance_score: number;
 }
-import { toast } from "sonner";
 
 interface InlineCourseRecommenderProps {
     userId: string;
@@ -114,21 +115,20 @@ export function InlineCourseRecommender({
                             <div className="flex gap-2">
                                 <Button
                                     size="sm"
-                                    variant="flat"
-                                    color="danger"
-                                    onPress={onClose}
-                                    className="bg-red-500/10 text-red-400"
+                                    variant="destructive"
+                                    onClick={onClose}
+                                    className="bg-red-500/10 text-red-400 hover:bg-red-500/20"
                                 >
                                     Dismiss
                                 </Button>
                                 {selectedCourses.length > 0 && (
                                     <Button
                                         size="sm"
-                                        color="primary"
-                                        onPress={handleAddSelected}
-                                        startContent={<Plus className="w-4 h-4" />}
+                                        variant="primary"
+                                        onClick={handleAddSelected}
+                                        className="bg-indigo-600 hover:bg-indigo-500"
                                     >
-                                        Add Selected ({selectedCourses.length})
+                                        <Plus className="w-4 h-4 mr-2" /> Add Selected ({selectedCourses.length})
                                     </Button>
                                 )}
                             </div>

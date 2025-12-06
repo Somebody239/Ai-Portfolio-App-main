@@ -47,7 +47,7 @@ export default function OnboardingFlow() {
   );
 
   const handleStep3Next = useCallback(
-    async (data: { dreamUniversity: string }) => {
+    async (data: { dreamUniversities: string[] }) => {
       try {
         setSubmitting(true);
         setError("");

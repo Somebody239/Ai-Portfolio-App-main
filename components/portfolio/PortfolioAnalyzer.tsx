@@ -16,12 +16,14 @@ interface PortfolioAnalyzerProps {
         currentActivities: string[];
         personalityTraits?: string[];
     };
+    autoAnalyze?: boolean;
 }
 
-export function PortfolioAnalyzer({ userId, data }: PortfolioAnalyzerProps) {
+export function PortfolioAnalyzer({ userId, data, autoAnalyze = false }: PortfolioAnalyzerProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [advice, setAdvice] = useState<PortfolioAdviceResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [hasAutoAnalyzed, setHasAutoAnalyzed] = useState(false);
 
     const handleAnalyze = async () => {
         setIsLoading(true);
@@ -37,18 +39,25 @@ export function PortfolioAnalyzer({ userId, data }: PortfolioAnalyzerProps) {
         }
     };
 
+    React.useEffect(() => {
+        if (autoAnalyze && !hasAutoAnalyzed && !advice && !isLoading) {
+            setHasAutoAnalyzed(true);
+            handleAnalyze();
+        }
+    }, [autoAnalyze, hasAutoAnalyzed, advice, isLoading]);
+
     if (advice) {
         return (
             <div className="space-y-6">
-                <Card className="bg-gradient-to-r from-indigo-950 to-purple-950 border-indigo-500/30 p-6">
+                <Card className="bg-gradient-to-r from-zinc-900 to-zinc-950 border-emerald-500/20 p-6">
                     <div className="flex items-start justify-between gap-4">
                         <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-indigo-300 mb-1">
+                            <div className="flex items-center gap-2 text-emerald-400 mb-1">
                                 <Sparkles className="w-5 h-5" />
                                 <span className="text-sm font-medium uppercase tracking-wider">Analysis Complete</span>
                             </div>
                             <h3 className="text-xl font-bold text-white">Your Portfolio Insights</h3>
-                            <p className="text-indigo-200/80 max-w-xl">
+                            <p className="text-zinc-400 max-w-xl">
                                 Based on your profile, here are personalized recommendations to strengthen your application.
                             </p>
                         </div>
@@ -95,9 +104,9 @@ export function PortfolioAnalyzer({ userId, data }: PortfolioAnalyzerProps) {
                 </div>
 
                 {/* Recommendations */}
-                <Card className="p-6 border-indigo-500/20 bg-indigo-500/5">
-                    <h4 className="flex items-center gap-2 font-bold text-indigo-400 mb-4">
-                        <Lightbulb className="w-5 h-5" /> Strategic Recommendations
+                <Card className="p-6 border-zinc-700/50 bg-zinc-900/30">
+                    <h4 className="flex items-center gap-2 font-bold text-white mb-4">
+                        <Lightbulb className="w-5 h-5 text-amber-400" /> Strategic Recommendations
                     </h4>
                     <div className="grid gap-4">
                         {advice.gapAnalysis.recommendations.map((rec: string, i: number) => (
@@ -112,15 +121,15 @@ export function PortfolioAnalyzer({ userId, data }: PortfolioAnalyzerProps) {
     }
 
     return (
-        <Card className="bg-gradient-to-r from-indigo-950 to-purple-950 border-indigo-500/30 p-6">
+        <Card className="bg-gradient-to-r from-zinc-900 to-zinc-950 border-emerald-500/20 p-6">
             <div className="flex items-start justify-between gap-4">
                 <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-indigo-300 mb-1">
+                    <div className="flex items-center gap-2 text-emerald-400 mb-1">
                         <Sparkles className="w-5 h-5" />
                         <span className="text-sm font-medium uppercase tracking-wider">AI Portfolio Analysis</span>
                     </div>
                     <h3 className="text-xl font-bold text-white">Unlock Your Acceptance Potential</h3>
-                    <p className="text-indigo-200/80 max-w-xl">
+                    <p className="text-zinc-400 max-w-xl">
                         Our AI analyzes your extracurriculars, awards, and essays to identify gaps and suggest high-impact improvements for your target universities.
                     </p>
                     {error && (
@@ -133,7 +142,7 @@ export function PortfolioAnalyzer({ userId, data }: PortfolioAnalyzerProps) {
                     variant="secondary"
                     onClick={handleAnalyze}
                     isLoading={isLoading}
-                    className="shrink-0 bg-white text-indigo-950 hover:bg-indigo-50 border-none"
+                    className="shrink-0 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-500 hover:to-emerald-400 border-none shadow-lg shadow-emerald-900/20 transition-all duration-200"
                 >
                     {isLoading ? "Analyzing..." : "Analyze Portfolio"}
                     {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}

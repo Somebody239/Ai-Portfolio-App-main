@@ -27,9 +27,11 @@ export const Card = ({
 export const Badge = ({
   text,
   variant = "neutral",
+  className,
 }: {
   text: string;
   variant?: "success" | "warning" | "danger" | "neutral";
+  className?: string;
 }) => {
   const variants = {
     success: "bg-emerald-950/30 text-emerald-400 border-emerald-900",
@@ -42,7 +44,8 @@ export const Badge = ({
     <span
       className={cn(
         "px-2.5 py-0.5 text-xs font-medium rounded-full border",
-        variants[variant]
+        variants[variant],
+        className
       )}
     >
       {text}

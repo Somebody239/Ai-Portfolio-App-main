@@ -37,10 +37,13 @@ export class OnboardingDataManager {
     const satScore = data.satScore
       ? InputSanitizer.sanitizeNumber(data.satScore, 400, 1600)
       : null;
-    const universityId = parseInt(data.dreamUniversity, 10);
 
-    if (isNaN(universityId)) {
-      throw new Error("Invalid university ID");
+    // Convert university IDs from strings to numbers
+    const universityIds = data.dreamUniversities.map(id => parseInt(id, 10));
+
+    // Validate all university IDs
+    if (universityIds.some(id => isNaN(id))) {
+      throw new Error("Invalid university ID in selection");
     }
 
     // Check if user exists
@@ -73,8 +76,10 @@ export class OnboardingDataManager {
       });
     }
 
-    // Add university target
-    await this.targetsRepo.create(userId, universityId);
+    // Create all university targets
+    for (const universityId of universityIds) {
+      await this.targetsRepo.create(userId, universityId);
+    }
   }
 }
 

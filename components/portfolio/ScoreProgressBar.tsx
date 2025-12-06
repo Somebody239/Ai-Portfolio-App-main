@@ -22,17 +22,17 @@ export function ScoreProgressBar({
 
     // Determine color based on percentage
     const getColor = () => {
-        if (percentage >= 90) return 'from-emerald-500 to-emerald-600';
-        if (percentage >= 80) return 'from-blue-500 to-blue-600';
-        if (percentage >= 70) return 'from-yellow-500 to-yellow-600';
-        return 'from-red-500 to-red-600';
+        if (percentage >= 90) return 'from-emerald-500 to-emerald-400';
+        if (percentage >= 80) return 'from-emerald-600 to-emerald-500';
+        if (percentage >= 70) return 'from-amber-400 to-amber-300';
+        return 'from-zinc-600 to-zinc-500';
     };
 
     const getTextColor = () => {
         if (percentage >= 90) return 'text-emerald-400';
-        if (percentage >= 80) return 'text-blue-400';
-        if (percentage >= 70) return 'text-yellow-400';
-        return 'text-red-400';
+        if (percentage >= 80) return 'text-emerald-500/80';
+        if (percentage >= 70) return 'text-amber-300';
+        return 'text-zinc-500';
     };
 
     return (

@@ -189,7 +189,7 @@ export function CourseScanner({ onCoursesAdded }: CourseScannerProps) {
                 <div
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
-                    className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-12 text-center hover:border-blue-500 dark:hover:border-blue-400 transition-colors cursor-pointer"
+                    className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-12 text-center hover:border-emerald-500 dark:hover:border-emerald-400 transition-colors cursor-pointer"
                 >
                     <input
                         type="file"
@@ -233,7 +233,7 @@ export function CourseScanner({ onCoursesAdded }: CourseScannerProps) {
 
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                            <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
                             <span className="text-sm font-medium">
                                 {status === 'ocr' && 'Extracting text from image...'}
                                 {status === 'ai' && 'AI is analyzing your courses...'}
@@ -244,7 +244,7 @@ export function CourseScanner({ onCoursesAdded }: CourseScannerProps) {
                         {progress > 0 && (
                             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                 <div
-                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                    className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>
@@ -268,13 +268,13 @@ export function CourseScanner({ onCoursesAdded }: CourseScannerProps) {
 
                     {/* Questions from AI */}
                     {questions.length > 0 && (
-                        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-                            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                            <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-2">
                                 Clarification Needed:
                             </p>
                             <ul className="list-disc list-inside space-y-1">
                                 {questions.map((q, i) => (
-                                    <li key={i} className="text-sm text-yellow-700 dark:text-yellow-300">
+                                    <li key={i} className="text-sm text-amber-700 dark:text-amber-300">
                                         {q}
                                     </li>
                                 ))}
@@ -331,7 +331,7 @@ export function CourseScanner({ onCoursesAdded }: CourseScannerProps) {
                     <div className="flex gap-3">
                         <button
                             onClick={handleSaveCourses}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                         >
                             <Check className="w-5 h-5" />
                             Save {extractedCourses.length} Course{extractedCourses.length > 1 ? 's' : ''}
@@ -349,7 +349,7 @@ export function CourseScanner({ onCoursesAdded }: CourseScannerProps) {
             {/* Saving State */}
             {status === 'saving' && (
                 <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 flex items-center justify-center gap-3">
-                    <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                    <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
                     <span className="text-sm font-medium">Saving courses...</span>
                 </div>
             )}

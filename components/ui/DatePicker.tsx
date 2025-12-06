@@ -169,13 +169,13 @@ export function DatePicker({
                                                 "h-8 w-8 rounded-md text-sm flex items-center justify-center transition-all relative",
                                                 !isCurrentMonth && "text-zinc-700",
                                                 isCurrentMonth && !isSelected && "text-zinc-300 hover:bg-zinc-800 hover:text-white",
-                                                isSelected && "bg-blue-600 text-white shadow-lg shadow-blue-900/20",
-                                                isToday && !isSelected && "text-blue-400 font-medium"
+                                                isSelected && "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20",
+                                                isToday && !isSelected && "text-emerald-400 font-medium"
                                             )}
                                         >
                                             {date.getDate()}
                                             {isToday && !isSelected && (
-                                                <div className="absolute bottom-1 w-1 h-1 bg-blue-500 rounded-full" />
+                                                <div className="absolute bottom-1 w-1 h-1 bg-emerald-500 rounded-full" />
                                             )}
                                         </button>
                                     );

@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Chip } from "@heroui/react";
 import { cn } from "@/lib/utils";
 
 interface DifficultyChipProps {
@@ -10,23 +9,32 @@ interface DifficultyChipProps {
 }
 
 export function DifficultyChip({ level, className }: DifficultyChipProps) {
-    const getColor = (lvl: string) => {
+    const getColorClasses = (lvl: string) => {
         const lower = lvl.toLowerCase();
-        if (lower.includes("ap") || lower === "hard" || lower === "high") return "danger"; // Red/Pink
-        if (lower.includes("honor") || lower === "medium") return "secondary"; // Purple
-        if (lower.includes("ib")) return "success"; // Green
-        if (lower.includes("dual")) return "warning"; // Orange
-        return "default"; // Gray
+        if (lower.includes("ap") || lower === "hard" || lower === "high") {
+            return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+        }
+        if (lower.includes("honor") || lower === "medium") {
+            return "bg-purple-500/10 text-purple-400 border-purple-500/20";
+        }
+        if (lower.includes("ib")) {
+            return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+        }
+        if (lower.includes("dual")) {
+            return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+        }
+        return "bg-zinc-800 text-zinc-400 border-zinc-700";
     };
 
     return (
-        <Chip
-            color={getColor(level)}
-            variant="flat"
-            size="sm"
-            className={cn("uppercase font-bold text-[10px]", className)}
+        <span
+            className={cn(
+                "inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase border",
+                getColorClasses(level),
+                className
+            )}
         >
             {level}
-        </Chip>
+        </span>
     );
 }

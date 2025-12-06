@@ -1,6 +1,24 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+
+const EmptyGPAState: React.FC = () => (
+    <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-2xl p-6 backdrop-blur-sm h-full flex flex-col items-center justify-center text-center">
+        <div className="w-16 h-16 rounded-full bg-zinc-800/50 flex items-center justify-center mb-4">
+            <TrendingUp className="w-8 h-8 text-zinc-600" />
+        </div>
+        <h3 className="text-lg font-semibold text-white mb-2">No grades added yet</h3>
+        <p className="text-sm text-zinc-500 mb-6 max-w-xs">
+            Add your courses and grades to see your progress over time
+        </p>
+        <Link href="/academics">
+            <button className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors">
+                Add Grades
+            </button>
+        </Link>
+    </div>
+);
 
 interface GPAProgressChartProps {
     currentGpa: number;
@@ -18,6 +36,11 @@ export const GPAProgressChart: React.FC<GPAProgressChartProps> = ({
         { grade: '12th', gpa: currentGpa || 3.85 }
     ]
 }) => {
+    // Show empty state if no GPA exists
+    if (!currentGpa || currentGpa === 0) {
+        return <EmptyGPAState />;
+    }
+
     const progress = (currentGpa / targetGpa) * 100;
 
     return (

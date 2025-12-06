@@ -9,18 +9,15 @@ interface CompactKPISectionProps {
         reach: number;
         highReach: number;
     };
-    satScore: number | null;
-    actScore: number | null;
+    extracurricularsCount: number;
 }
 
 export const CompactKPISection: React.FC<CompactKPISectionProps> = ({
     gpa,
     riskCounts,
-    satScore,
-    actScore
+    extracurricularsCount
 }) => {
     const totalTargets = riskCounts.safety + riskCounts.target + riskCounts.reach + riskCounts.highReach;
-    const bestTestScore = satScore ? `SAT ${satScore}` : actScore ? `ACT ${actScore}` : 'No Scores';
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -57,17 +54,18 @@ export const CompactKPISection: React.FC<CompactKPISectionProps> = ({
                 </div>
             </div>
 
-            {/* Test Scores Card */}
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-2xl p-4 flex items-center justify-between backdrop-blur-sm hover:border-zinc-700/50 transition-all group cursor-pointer">
+            {/* Extracurriculars Card */}
+            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-2xl p-4 flex items-center justify-between backdrop-blur-sm hover:border-zinc-700/50 transition-all group">
                 <div>
-                    <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-1">Best Test Score</p>
+                    <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-1">Activities</p>
                     <div className="flex items-baseline gap-2">
-                        <h3 className="text-2xl font-bold text-white">{bestTestScore}</h3>
+                        <h3 className="text-2xl font-bold text-white">{extracurricularsCount}</h3>
+                        <span className="text-xs text-zinc-400">Active</span>
                     </div>
                 </div>
-                <button className="w-8 h-8 rounded-full bg-[#FF6B35]/10 text-[#FF6B35] flex items-center justify-center hover:bg-[#FF6B35] hover:text-white transition-all">
-                    <Plus size={16} />
-                </button>
+                <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-purple-400 group-hover:bg-purple-400/10 transition-colors">
+                    <BookOpen size={18} />
+                </div>
             </div>
         </div>
     );

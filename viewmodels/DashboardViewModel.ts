@@ -14,7 +14,17 @@ import type {
   Extracurricular,
   AIRecommendation,
   User,
+  Achievement,
 } from "@/lib/types";
+
+export interface TimelineEvent {
+  id: string;
+  title: string;
+  date: string;
+  type: 'target' | 'activity' | 'award';
+  color: string;
+  icon: any; // Lucide icon
+}
 
 interface DashboardViewModelProps {
   courses: Course[];
@@ -23,6 +33,7 @@ interface DashboardViewModelProps {
   universities: University[];
   recommendations: AIRecommendation[];
   extracurriculars: Extracurricular[];
+  achievements: Achievement[];
   user: User | null;
 }
 
@@ -34,6 +45,7 @@ export class DashboardViewModel {
   private universities: University[];
   private recommendations: AIRecommendation[];
   private extracurriculars: Extracurricular[];
+  private achievements: Achievement[];
   private user: User | null;
 
   constructor(props: DashboardViewModelProps) {
@@ -44,6 +56,7 @@ export class DashboardViewModel {
     this.universities = props.universities;
     this.recommendations = props.recommendations;
     this.extracurriculars = props.extracurriculars;
+    this.achievements = props.achievements;
     this.user = props.user;
   }
 
@@ -70,12 +83,29 @@ export class DashboardViewModel {
   getUniversityRisks(): Array<University & { risk: "Safety" | "Target" | "Reach" | "High Reach" }> {
     const gpa = this.getGPA();
     const satScore = this.getSATScore();
-    const targetUnis = this.getTargetUniversities();
 
-    return targetUnis.map((uni) => ({
-      ...uni,
-      risk: this.statsService.calculateAdmissionsRisk(gpa, satScore, uni),
-    }));
+    return this.targets
+      .filter(target => target.university)
+      .map((target) => {
+        const uni = target.university!;
+
+        // Check for manual risk override in reason_for_interest
+        // Format: "[Risk: Reach] ..."
+        const manualRiskMatch = target.reason_for_interest?.match(/\[Risk: (Safety|Target|Reach|High Reach)\]/);
+
+        let risk: "Safety" | "Target" | "Reach" | "High Reach";
+
+        if (manualRiskMatch) {
+          risk = manualRiskMatch[1] as "Safety" | "Target" | "Reach" | "High Reach";
+        } else {
+          risk = this.statsService.calculateAdmissionsRisk(gpa, satScore, uni);
+        }
+
+        return {
+          ...uni,
+          risk,
+        };
+      });
   }
 
   getSATSectionScores(): { math: number | null; readingWriting: number | null } {
@@ -170,6 +200,55 @@ export class DashboardViewModel {
       projectedGpa,
     };
   }
+
+  getTimelineEvents(): TimelineEvent[] {
+    const events: TimelineEvent[] = [];
+
+    // Targets
+    this.targets.forEach(t => {
+      if (t.created_at && t.university) {
+        events.push({
+          id: `target-${t.id}`,
+          title: `Added ${t.university.name}`,
+          date: new Date(t.created_at).toLocaleDateString(),
+          type: 'target',
+          color: 'bg-blue-500/20 text-blue-400',
+          icon: 'Target'
+        });
+      }
+    });
+
+    // Activities
+    this.extracurriculars.forEach(e => {
+      if (e.created_at) {
+        events.push({
+          id: `activity-${e.id}`,
+          title: `Added Activity: ${e.name}`,
+          date: new Date(e.created_at).toLocaleDateString(),
+          type: 'activity',
+          color: 'bg-purple-500/20 text-purple-400',
+          icon: 'BookOpen'
+        });
+      }
+    });
+
+    // Achievements
+    this.achievements.forEach(a => {
+      if (a.created_at) {
+        events.push({
+          id: `award-${a.id}`,
+          title: `Added Award: ${a.title}`,
+          date: new Date(a.created_at).toLocaleDateString(),
+          type: 'award',
+          color: 'bg-yellow-500/20 text-yellow-400',
+          icon: 'Award'
+        });
+      }
+    });
+
+    // Sort by date desc
+    return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+  }
 }
 
 /**
@@ -183,6 +262,7 @@ export function useDashboardViewModel(props: DashboardViewModelProps) {
     props.universities,
     props.recommendations,
     props.extracurriculars,
+    props.achievements,
     props.user,
   ]);
 
@@ -195,6 +275,7 @@ export function useDashboardViewModel(props: DashboardViewModelProps) {
   const riskCounts = useMemo(() => viewModel.getRiskCounts(), [viewModel]);
   const activityHours = useMemo(() => viewModel.getActivityHours(), [viewModel]);
   const improvementInsight = useMemo(() => viewModel.getImprovementInsight(), [viewModel]);
+  const timelineEvents = useMemo(() => viewModel.getTimelineEvents(), [viewModel]);
 
   return {
     gpa,
@@ -206,6 +287,7 @@ export function useDashboardViewModel(props: DashboardViewModelProps) {
     riskCounts,
     activityHours,
     improvementInsight,
+    timelineEvents,
   };
 }
 

@@ -4,7 +4,7 @@
  */
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Plus } from "lucide-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
@@ -13,8 +13,12 @@ import { useUser } from "@/hooks/useUser";
 import { useDashboardViewModel } from "@/viewmodels/DashboardViewModel";
 import { UniversitySelectModal } from "@/components/modals/universities/UniversitySelectModal";
 import { UniversityDetailsModal } from "@/components/modals/universities/UniversityDetailsModal";
-import { University } from "@/lib/types";
+import { UniversityRiskModal } from "@/components/modals/universities/UniversityRiskModal";
+import { TestScoreModal } from "@/components/modals/scores/TestScoreModal";
+import { AcceptancePredictionBanner } from "@/components/dashboard/AcceptancePredictionBanner";
+import { University, TestType } from "@/lib/types";
 import { UniversityTargetsManager } from "@/managers/UniversityTargetsManager";
+import { TestScoresManager } from "@/managers/TestScoresManager";
 
 // New Widgets
 import { CompactKPISection } from "@/components/dashboard/new-widgets/CompactKPISection";
@@ -29,7 +33,16 @@ import { RecentEventsTimeline } from "@/components/dashboard/new-widgets/RecentE
 
 export default function DashboardView() {
   const [isUniversityModalOpen, setIsUniversityModalOpen] = useState(false);
+  const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState<University | null>(null);
+  const [isRiskModalOpen, setIsRiskModalOpen] = useState(false);
+  const [selectedRiskUniversity, setSelectedRiskUniversity] = useState<(University & { risk?: string }) | null>(null);
+
+  const predictionBannerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToPrediction = () => {
+    predictionBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   const {
     courses,
@@ -37,6 +50,7 @@ export default function DashboardView() {
     targets,
     recommendations,
     extracurriculars,
+    achievements,
     loading: portfolioLoading,
     refetch: refetchPortfolio,
   } = usePortfolio();
@@ -52,6 +66,7 @@ export default function DashboardView() {
     riskCounts,
     activityHours,
     improvementInsight,
+    timelineEvents,
   } = useDashboardViewModel({
     courses,
     scores,
@@ -59,11 +74,13 @@ export default function DashboardView() {
     universities,
     recommendations,
     extracurriculars,
+    achievements,
     user,
   });
 
   const loading = portfolioLoading || universitiesLoading || userLoading;
   const targetsManager = new UniversityTargetsManager();
+  const scoresManager = new TestScoresManager();
 
   // Ensure riskCounts has default values to prevent NaN
   const safeRiskCounts = {
@@ -100,6 +117,75 @@ export default function DashboardView() {
     await refetchPortfolio();
   }, [refetchPortfolio]);
 
+
+
+  const handleAddUniversity = useCallback(async (uni: University) => {
+    if (!user) return;
+    try {
+      await targetsManager.create(user.id, { university_id: uni.id });
+      await refetchPortfolio();
+    } catch (error) {
+      console.error("Failed to add university:", error);
+    }
+  }, [user, targetsManager, refetchPortfolio]);
+
+  const getUniversityRisk = useCallback((universityId: number) => {
+    return uniRisks.find(u => u.id === universityId)?.risk || "Target";
+  }, [uniRisks]);
+
+  const handleEditRisk = useCallback((uni: University) => {
+    const currentRisk = getUniversityRisk(uni.id);
+    setSelectedRiskUniversity({ ...uni, risk: currentRisk });
+    setIsRiskModalOpen(true);
+  }, [getUniversityRisk]);
+
+  const handleUpdateRisk = useCallback(async (newRisk: string) => {
+    if (!selectedUniversity || !user) return;
+    const target = targets.find((t) => t.university_id === selectedUniversity.id);
+    if (!target) return;
+
+    // Preserve existing reason, remove old risk tag if present
+    let currentReason = target.reason_for_interest || "";
+    currentReason = currentReason.replace(/\[Risk: (Safety|Target|Reach|High Reach)\]\s*/g, "");
+
+    // Prepend new risk tag
+    const newReason = `[Risk: ${newRisk}] ${currentReason}`.trim();
+
+    try {
+      await targetsManager.update(target.id, { reason_for_interest: newReason });
+      await refetchPortfolio();
+
+      // Update selected university local state to reflect change immediately
+      setSelectedUniversity(prev => prev ? { ...prev, risk: newRisk } : null);
+    } catch (error) {
+      console.error("Failed to update risk:", error);
+    }
+  }, [selectedUniversity, user, targets, targetsManager, refetchPortfolio]);
+
+  const handleSaveRiskModal = useCallback(async (risk: string) => {
+    if (!selectedRiskUniversity || !user) return;
+
+    const target = targets.find(t => t.university_id === selectedRiskUniversity.id);
+    if (!target) return;
+
+    // Preserve existing reason content if any
+    let existingReason = target.reason_for_interest || "";
+    // Remove old risk tag if present
+    existingReason = existingReason.replace(/\[Risk: .*?\]\s*/, "");
+
+    const newReason = `[Risk: ${risk}] ${existingReason}`.trim();
+
+    try {
+      await targetsManager.update(target.id, { reason_for_interest: newReason });
+      await refetchPortfolio();
+      setIsRiskModalOpen(false); // Close the modal
+      setSelectedRiskUniversity(null); // Clear selected university
+    } catch (error) {
+      console.error("Failed to update risk from modal:", error);
+    }
+  }, [user, targets, targetsManager, refetchPortfolio, selectedRiskUniversity]);
+
+
   if (loading) {
     return (
       <AppShell>
@@ -122,21 +208,13 @@ export default function DashboardView() {
             Here's your college application progress overview.
           </p>
         </div>
-        <button
-          onClick={() => setIsUniversityModalOpen(true)}
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-zinc-100 text-black hover:bg-white font-medium transition-colors"
-        >
-          <Plus size={16} className="mr-2" />
-          Add University
-        </button>
       </div>
 
       {/* Top KPI Row */}
       <CompactKPISection
         gpa={gpa}
         riskCounts={safeRiskCounts}
-        satScore={satScore}
-        actScore={actScore}
+        extracurricularsCount={extracurriculars.length}
       />
 
       {/* Main Grid */}
@@ -149,11 +227,21 @@ export default function DashboardView() {
               universities={uniRisks}
               onSelect={handleSelectUniversity}
               onRemove={handleRemoveTarget}
+              onAdd={() => setIsUniversityModalOpen(true)}
+              onAddUniversity={handleAddUniversity}
+              onEditRisk={handleEditRisk} // Pass the new handler
             />
           </div>
 
+          <div ref={predictionBannerRef}>
+            <AcceptancePredictionBanner />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 min-h-[340px]">
-            <TestScoresCard satScore={satScore} actScore={actScore} />
+            <TestScoresCard
+              satScore={satScore}
+              actScore={actScore}
+            />
             <ActivitiesDonutChart activityHours={activityHours} />
             <AnalyticsSnapshot />
           </div>
@@ -162,10 +250,13 @@ export default function DashboardView() {
         {/* Right Column (Assistant & Timeline) */}
         <div className="lg:col-span-4 space-y-8">
           <div className="min-h-[400px]">
-            <AIAssistantModule insight={aiInsight} />
+            <AIAssistantModule
+              insight={aiInsight}
+              onPredictAcceptance={scrollToPrediction}
+            />
           </div>
           <div className="min-h-[340px]">
-            <RecentEventsTimeline />
+            <RecentEventsTimeline events={timelineEvents} />
           </div>
         </div>
       </div>
@@ -182,10 +273,32 @@ export default function DashboardView() {
       )}
 
       <UniversityDetailsModal
-        university={selectedUniversity}
         isOpen={!!selectedUniversity}
         onClose={() => setSelectedUniversity(null)}
+        university={selectedUniversity ? {
+          ...selectedUniversity,
+          risk: getUniversityRisk(selectedUniversity.id)
+        } : null}
       />
+
+      <UniversityRiskModal
+        isOpen={isRiskModalOpen}
+        onClose={() => setIsRiskModalOpen(false)}
+        university={selectedRiskUniversity}
+        onSave={handleSaveRiskModal}
+      />
+
+      {user && (
+        <TestScoreModal
+          isOpen={isScoreModalOpen}
+          onClose={() => setIsScoreModalOpen(false)}
+          onSuccess={() => {
+            setIsScoreModalOpen(false);
+            refetchPortfolio();
+          }}
+          userId={user.id}
+        />
+      )}
     </AppShell>
   );
 }

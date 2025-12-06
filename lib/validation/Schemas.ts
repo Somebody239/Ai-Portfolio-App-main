@@ -43,7 +43,9 @@ export const AcademicDataSchema = z.object({
 });
 
 export const TargetUniversitySchema = z.object({
-  dreamUniversity: z.string().uuid("Invalid university ID"),
+  dreamUniversities: z.array(z.string().uuid("Invalid university ID"))
+    .min(1, "Please select at least one university")
+    .max(10, "Maximum 10 universities allowed"),
 });
 
 export const OnboardingDataSchema = UserProfileSchema.merge(AcademicDataSchema).merge(TargetUniversitySchema);

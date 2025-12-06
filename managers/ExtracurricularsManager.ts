@@ -7,6 +7,7 @@ import { ExtracurricularsRepository } from "@/lib/supabase/repositories/extracur
 import { Extracurricular } from "@/lib/types";
 
 export interface ExtracurricularFormData {
+  name?: string;
   title: string;
   description?: string;
   level: string;
@@ -26,7 +27,7 @@ export class ExtracurricularsManager {
 
     return await this.repository.create({
       user_id: userId,
-      name: data.title, // Map title to name for interface compatibility
+      name: data.name || data.title, // Fallback to title if name not provided
       title: data.title,
       description: data.description || null,
       level: data.level,
@@ -41,6 +42,7 @@ export class ExtracurricularsManager {
     }
 
     return await this.repository.update(id, {
+      name: data.name,
       title: data.title,
       description: data.description,
       level: data.level,

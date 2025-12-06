@@ -15,9 +15,12 @@ import { TestScoresManager } from "@/managers/TestScoresManager";
 import { CoursesManager } from "@/managers/CoursesManager";
 import { StandardizedScore, Course, CourseTerm, CourseLevel } from "@/lib/types";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { TranscriptUploadModal } from "@/components/academics/TranscriptUploadModal";
+import { GradeAnalyzer } from "@/components/ai/GradeAnalyzer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 
-import { Scan } from "lucide-react";
+import { Scan, Upload } from "lucide-react";
 
 export default function AcademicsView() {
   const {
@@ -33,6 +36,8 @@ export default function AcademicsView() {
 
   const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const [isTranscriptModalOpen, setIsTranscriptModalOpen] = useState(false);
+  const [isAnalyzerOpen, setIsAnalyzerOpen] = useState(false);
 
   // Lifted state for year selection
   const [selectedYear, setSelectedYear] = useState<number>(12);
@@ -43,6 +48,17 @@ export default function AcademicsView() {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Check for action=analyze in URL
+  React.useEffect(() => {
+    if (searchParams.get('action') === 'analyze') {
+      setIsAnalyzerOpen(true);
+      // Clean up URL without refresh
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [searchParams]);
 
   // Filter courses for GPA Section based on selected year
   const currentYearCourses = useMemo(() => {
@@ -70,6 +86,39 @@ export default function AcademicsView() {
     } catch (error) {
       console.error("Failed to delete score:", error);
       alert("Failed to delete test score. Please try again.");
+    }
+  };
+
+  const handleUpdateScore = async (id: string, data: Partial<StandardizedScore>) => {
+    try {
+      const manager = new TestScoresManager();
+      // We need to pass the full data expected by update, or partial?
+      // Manager.update takes Partial<TestScoreFormData>.
+      // We need to map StandardizedScore fields to FormData fields.
+      // StandardizedScore has 'id', 'user_id', 'created_at' etc.
+      // FormData has 'test_type', 'score', 'section_scores', 'date_taken'.
+
+      await manager.update(id, {
+        test_type: data.test_type,
+        score: data.score,
+        section_scores: data.section_scores,
+        date_taken: data.date_taken ? new Date(data.date_taken).toISOString() : undefined
+      });
+      refetch();
+    } catch (error) {
+      console.error("Failed to update score:", error);
+      alert("Failed to update score.");
+    }
+  };
+
+  const handleCreateScore = async (data: any) => {
+    try {
+      const manager = new TestScoresManager();
+      await manager.create(user?.id || "", data);
+      refetch();
+    } catch (error) {
+      console.error("Failed to create score:", error);
+      alert("Failed to create score.");
     }
   };
 
@@ -151,9 +200,16 @@ export default function AcademicsView() {
             )}
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-3">
-
-          <InteractiveHoverButton text="Download Transcript" className="w-48" />
+        <div className="flex items-center gap-3">
+          <InteractiveHoverButton
+            text="Import Transcript"
+            className="w-48"
+            onClick={() => setIsTranscriptModalOpen(true)}
+          />
+          <InteractiveHoverButton
+            text="Export"
+            className="w-32"
+          />
         </div>
       </header>
 
@@ -186,6 +242,8 @@ export default function AcademicsView() {
             scores={scores}
             onAdd={handleAddScore}
             onEdit={handleEditScore}
+            onUpdate={handleUpdateScore}
+            onCreate={handleCreateScore}
             onDelete={handleDeleteScore}
           />
 
@@ -206,6 +264,22 @@ export default function AcademicsView() {
       {/* Modals */}
       {user && (
         <>
+          <TestScoreModal
+            isOpen={isScoreModalOpen}
+            onClose={() => {
+              setIsScoreModalOpen(false);
+              setEditingScore(null);
+            }}
+            onSuccess={() => {
+              refetch();
+              setIsScoreModalOpen(false);
+              setEditingScore(null);
+            }}
+            userId={user.id}
+            initialData={editingScore || undefined}
+            mode={editingScore ? "edit" : "create"}
+          />
+
           <CourseModal
             isOpen={isCourseModalOpen}
             onClose={() => {
@@ -223,6 +297,25 @@ export default function AcademicsView() {
             initialData={editingCourse || { year: selectedYear, semester: selectedSemester } as any}
             mode={editingCourse ? "edit" : "create"}
           />
+
+          <TranscriptUploadModal
+            isOpen={isTranscriptModalOpen}
+            onClose={() => setIsTranscriptModalOpen(false)}
+            onSuccess={() => {
+              refetch();
+              setIsTranscriptModalOpen(false);
+            }}
+            userId={user.id}
+          />
+
+          <Dialog open={isAnalyzerOpen} onOpenChange={setIsAnalyzerOpen}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>AI Course Analysis</DialogTitle>
+              </DialogHeader>
+              <GradeAnalyzer />
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </AppShell>

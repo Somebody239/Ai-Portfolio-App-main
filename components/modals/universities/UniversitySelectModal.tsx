@@ -77,7 +77,7 @@ export function UniversitySelectModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] w-full">
         <DialogHeader>
           <DialogTitle>Add Target University</DialogTitle>
           <DialogDescription>
@@ -100,13 +100,22 @@ export function UniversitySelectModal({
                     {selectedUniversity.city}, {selectedUniversity.state}
                   </p>
                 </div>
-                {selectedUniversity.image_url && (
-                  <img
-                    src={selectedUniversity.image_url}
-                    alt={selectedUniversity.name}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                )}
+                {/* Website Link Section */}
+                <div className="flex flex-col items-end gap-2">
+                  {selectedUniversity.image_url && (
+                    <img src={selectedUniversity.image_url} alt={selectedUniversity.name} className="h-10 w-10 rounded-full object-cover" />
+                  )}
+                  {selectedUniversity.website && (
+                    <a
+                      href={selectedUniversity.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1"
+                    >
+                      Visit Website ↗
+                    </a>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-zinc-800">
@@ -120,7 +129,9 @@ export function UniversitySelectModal({
                   <p className="text-xs text-zinc-500">Acceptance Rate</p>
                   <p className="text-sm font-medium text-white">
                     {selectedUniversity.acceptance_rate
-                      ? `${(selectedUniversity.acceptance_rate * 100).toFixed(1)}%`
+                      ? (selectedUniversity.acceptance_rate > 1
+                        ? `${selectedUniversity.acceptance_rate.toFixed(1)}%`
+                        : `${(selectedUniversity.acceptance_rate * 100).toFixed(1)}%`)
                       : 'N/A'}
                   </p>
                 </div>

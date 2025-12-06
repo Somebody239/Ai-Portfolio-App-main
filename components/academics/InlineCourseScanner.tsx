@@ -2,7 +2,8 @@
 
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button, Progress } from "@heroui/react";
+import { Button } from "@/components/ui/Button";
+import { AIProgress } from "@/components/ui/heroui/AIProgress";
 import { UploadCloud, FileText, CheckCircle2, AlertCircle, X, Scan, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { AIManager } from "@/managers/AIManager";
@@ -100,7 +101,7 @@ export function InlineCourseScanner({
                                     Upload a screenshot or PDF of your schedule to automatically add courses.
                                 </p>
                             </div>
-                            <Button isIconOnly variant="light" onPress={onClose}>
+                            <Button variant="ghost" size="sm" onClick={onClose}>
                                 <X className="w-5 h-5 text-zinc-500" />
                             </Button>
                         </div>
@@ -142,11 +143,9 @@ export function InlineCourseScanner({
 
                                 {file && !extractedCourses.length && (
                                     <Button
-                                        fullWidth
-                                        color="primary"
+                                        className="w-full bg-indigo-600 hover:bg-indigo-500"
                                         isLoading={isScanning}
-                                        onPress={handleScan}
-                                        className="bg-indigo-600"
+                                        onClick={handleScan}
                                     >
                                         {isScanning ? "Scanning..." : "Scan Schedule"}
                                     </Button>
@@ -154,11 +153,7 @@ export function InlineCourseScanner({
 
                                 {isScanning && (
                                     <div className="space-y-2">
-                                        <div className="flex justify-between text-xs text-zinc-400">
-                                            <span>Analyzing document...</span>
-                                            <span>{progress}%</span>
-                                        </div>
-                                        <Progress value={progress} color="primary" size="sm" className="h-1" />
+                                        <AIProgress value={progress} color="primary" />
                                     </div>
                                 )}
                             </div>
@@ -191,13 +186,10 @@ export function InlineCourseScanner({
 
                                         <div className="mt-4 pt-4 border-t border-zinc-800">
                                             <Button
-                                                fullWidth
-                                                color="primary"
-                                                onPress={handleConfirm}
-                                                endContent={<ArrowRight className="w-4 h-4" />}
-                                                className="bg-indigo-600 text-white font-medium"
+                                                className="w-full bg-indigo-600 hover:bg-indigo-500"
+                                                onClick={handleConfirm}
                                             >
-                                                Add All Courses
+                                                Add All Courses <ArrowRight className="w-4 h-4 ml-2" />
                                             </Button>
                                         </div>
                                     </div>

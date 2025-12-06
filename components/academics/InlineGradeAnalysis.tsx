@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button, Textarea } from "@heroui/react";
+import { Button } from "@/components/ui/Button";
 import { Calculator, TrendingUp, AlertTriangle, CheckCircle2, ChevronUp } from "lucide-react";
 import { AIProgress } from "@/components/ui/heroui/AIProgress";
 import { AIManager } from "@/managers/AIManager";
@@ -82,11 +82,10 @@ export function InlineGradeAnalysis({
                                 <Calculator className="w-4 h-4" /> Grade Analysis
                             </h4>
                             <Button
-                                isIconOnly
                                 size="sm"
-                                variant="light"
-                                onPress={onClose}
-                                className="text-zinc-500 hover:text-zinc-300"
+                                variant="ghost"
+                                onClick={onClose}
+                                className="p-1 h-auto text-zinc-500 hover:text-zinc-300"
                             >
                                 <ChevronUp className="w-4 h-4" />
                             </Button>
@@ -97,24 +96,18 @@ export function InlineGradeAnalysis({
                                 <p className="text-xs text-zinc-400">
                                     Enter your assignments (one per line) to see your projected grade and study advice.
                                 </p>
-                                <Textarea
+                                <textarea
                                     placeholder="e.g. Midterm: 85/100 (20%)"
-                                    minRows={3}
+                                    rows={3}
                                     value={assignmentsInput}
-                                    onValueChange={setAssignmentsInput}
-                                    className="w-full"
-                                    classNames={{
-                                        input: "text-sm",
-                                        inputWrapper: "bg-zinc-900/50 border-zinc-700"
-                                    }}
+                                    onChange={(e) => setAssignmentsInput(e.target.value)}
+                                    className="w-full bg-zinc-900/50 border border-zinc-700 rounded-lg p-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                 />
                                 <Button
-                                    fullWidth
-                                    color="primary"
+                                    className="w-full bg-indigo-600 hover:bg-indigo-500"
                                     size="sm"
                                     isLoading={isLoading}
-                                    onPress={handleAnalyze}
-                                    className="bg-indigo-600"
+                                    onClick={handleAnalyze}
                                 >
                                     Analyze Performance
                                 </Button>
@@ -154,11 +147,10 @@ export function InlineGradeAnalysis({
                                 </div>
 
                                 <Button
-                                    fullWidth
-                                    variant="flat"
+                                    className="w-full text-zinc-400 hover:bg-zinc-800"
+                                    variant="ghost"
                                     size="sm"
-                                    onPress={() => setAnalysis(null)}
-                                    className="text-zinc-400"
+                                    onClick={() => setAnalysis(null)}
                                 >
                                     New Analysis
                                 </Button>

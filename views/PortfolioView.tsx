@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { useUser } from "@/hooks/useUser";
@@ -8,13 +9,16 @@ import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { ExtracurricularsSection } from "@/components/portfolio/ExtracurricularsSection";
 import { AchievementsSection } from "@/components/portfolio/AchievementsSection";
 import { PersonalitySection } from "@/components/portfolio/PersonalitySection";
-import { EssayPromptsSection } from "@/components/portfolio/EssayPromptsSection";
+import { AIInsightsPanel } from "@/components/portfolio/AIInsightsPanel";
+import { ApplicationEssaysSection } from "@/components/portfolio/ApplicationEssaysSection";
 import { PortfolioAnalyzer } from "@/components/portfolio/PortfolioAnalyzer";
 import { ExtracurricularModal } from "@/components/modals/extracurriculars/ExtracurricularModal";
 import { AchievementModal } from "@/components/modals/achievements/AchievementModal";
 import { ExtracurricularsManager } from "@/managers/ExtracurricularsManager";
 import { AchievementsManager } from "@/managers/AchievementsManager";
-import { Extracurricular, Achievement } from "@/lib/types";
+import { PersonalityManager } from "@/managers/PersonalityManager";
+import { Extracurricular, Achievement, PersonalityInput } from "@/lib/types";
+import { ExtracurricularFormData } from "@/components/portfolio/ExtracurricularInlineForm";
 
 export default function PortfolioView() {
     const {
@@ -30,6 +34,34 @@ export default function PortfolioView() {
     const [isAwardModalOpen, setIsAwardModalOpen] = useState(false);
     const [editingActivity, setEditingActivity] = useState<Extracurricular | null>(null);
     const [editingAward, setEditingAward] = useState<Achievement | null>(null);
+    const [personalityResponses, setPersonalityResponses] = useState<PersonalityInput[]>([]);
+
+    const searchParams = useSearchParams();
+    const shouldAutoAnalyze = searchParams.get('action') === 'analyze';
+
+    // Clean up URL if auto-analyzing
+    useEffect(() => {
+        if (shouldAutoAnalyze) {
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }, [shouldAutoAnalyze]);
+
+    const personalityManager = useMemo(() => new PersonalityManager(), []);
+
+    const loadPersonalityResponses = useCallback(async () => {
+        if (!user) return;
+        try {
+            const responses = await personalityManager.getUserAnswers(user.id);
+            setPersonalityResponses(responses);
+        } catch (error) {
+            console.error("Failed to load personality responses:", error);
+        }
+    }, [user, personalityManager]);
+
+    useEffect(() => {
+        loadPersonalityResponses();
+    }, [loadPersonalityResponses]);
 
     const handleAddActivity = () => {
         setEditingActivity(null);
@@ -53,6 +85,19 @@ export default function PortfolioView() {
         }
     };
 
+    const handleAddActivityInline = async (data: ExtracurricularFormData) => {
+        if (!user) return;
+        const manager = new ExtracurricularsManager();
+        await manager.create(user.id, data);
+        await refetch();
+    };
+
+    const handleUpdateActivityInline = async (id: string, data: ExtracurricularFormData) => {
+        const manager = new ExtracurricularsManager();
+        await manager.update(id, data);
+        await refetch();
+    };
+
     const handleAddAward = () => {
         setEditingAward(null);
         setIsAwardModalOpen(true);
@@ -74,6 +119,20 @@ export default function PortfolioView() {
             alert("Failed to delete award. Please try again.");
         }
     };
+
+    const handleAddAwardInline = async (data: any) => {
+        if (!user) return;
+        const manager = new AchievementsManager();
+        await manager.create(user.id, data);
+        await refetch();
+    };
+
+    const handleUpdateAwardInline = async (id: string, data: any) => {
+        const manager = new AchievementsManager();
+        await manager.update(id, data);
+        await refetch();
+    };
+
 
     const isLoading = loading || userLoading;
 
@@ -119,12 +178,15 @@ export default function PortfolioView() {
                             currentActivities: extracurriculars.map(e => e.name),
                             personalityTraits: [],
                         }}
+                        autoAnalyze={shouldAutoAnalyze}
                     />
                 )}
 
                 <ExtracurricularsSection
                     items={extracurriculars}
                     onAdd={handleAddActivity}
+                    onAddInline={handleAddActivityInline}
+                    onUpdateInline={handleUpdateActivityInline}
                     onEdit={handleEditActivity}
                     onDelete={handleDeleteActivity}
                 />
@@ -134,6 +196,8 @@ export default function PortfolioView() {
                 <AchievementsSection
                     items={achievements}
                     onAdd={handleAddAward}
+                    onAddInline={handleAddAwardInline}
+                    onUpdateInline={handleUpdateAwardInline}
                     onEdit={handleEditAward}
                     onDelete={handleDeleteAward}
                 />
@@ -144,7 +208,9 @@ export default function PortfolioView() {
                     <>
                         <PersonalitySection userId={user.id} />
                         <div className="w-full h-px bg-zinc-900" />
-                        <EssayPromptsSection />
+                        <AIInsightsPanel userId={user.id} responses={personalityResponses} />
+                        <div className="w-full h-px bg-zinc-900" />
+                        <ApplicationEssaysSection userId={user.id} />
                     </>
                 )}
             </div>
@@ -186,3 +252,4 @@ export default function PortfolioView() {
         </AppShell>
     );
 }
+

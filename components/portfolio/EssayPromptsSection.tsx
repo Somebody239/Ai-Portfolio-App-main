@@ -20,8 +20,8 @@ export function EssayPromptsSection() {
     return (
         <Card className="space-y-6">
             <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-950/30 border border-blue-900/50">
-                    <FileText className="h-6 w-6 text-blue-400" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-950/30 border border-emerald-900/50">
+                    <FileText className="h-6 w-6 text-emerald-400" />
                 </div>
                 <div>
                     <h2 className="text-lg font-semibold text-white">Common App Essays</h2>
@@ -38,7 +38,7 @@ export function EssayPromptsSection() {
                         className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800 relative group"
                     >
                         <div className="flex justify-between items-start mb-2">
-                            <Badge text={`Option ${index + 1}`} variant="neutral" />
+                            <Badge text={`Option ${index + 1}`} variant="neutral" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20" />
                             <button
                                 onClick={() => handleCopy(prompt.prompt_text, prompt.id)}
                                 className="text-zinc-500 hover:text-white transition-colors"

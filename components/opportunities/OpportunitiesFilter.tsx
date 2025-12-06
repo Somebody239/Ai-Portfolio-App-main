@@ -1,7 +1,7 @@
 import { Select } from "@/components/ui/Select";
-import { Card, Badge } from "@/components/ui/Atoms";
 import { Button } from "@/components/ui/Button";
-import { X } from "lucide-react";
+import { X, Filter } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface OpportunitiesFilterProps {
     types: string[];
@@ -24,46 +24,65 @@ export function OpportunitiesFilter({
 }: OpportunitiesFilterProps) {
     const hasFilters = selectedType !== "all" || selectedLocation !== "all";
 
+    // Ensure common types are always available if not fetched yet
+    const displayTypes = types.length > 0 ? types : ["Internship", "Summer Program", "Competition", "Volunteering"];
+
     return (
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-8 p-4 bg-zinc-900/30 border border-zinc-800/50 rounded-xl backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-sm font-medium text-zinc-400 mr-2">
-                <span className="uppercase tracking-wider text-xs">Filter By:</span>
-            </div>
+        <div className="space-y-4 mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                <div className="flex flex-wrap gap-2">
+                    <button
+                        onClick={() => onTypeChange("all")}
+                        className={cn(
+                            "px-4 py-2 rounded-full text-sm font-medium transition-all border",
+                            selectedType === "all"
+                                ? "bg-white text-black border-white"
+                                : "bg-zinc-900/50 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white"
+                        )}
+                    >
+                        All Opportunities
+                    </button>
+                    {displayTypes.map((type) => (
+                        <button
+                            key={type}
+                            onClick={() => onTypeChange(type)}
+                            className={cn(
+                                "px-4 py-2 rounded-full text-sm font-medium transition-all border",
+                                selectedType === type
+                                    ? "bg-white text-black border-white"
+                                    : "bg-zinc-900/50 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white"
+                            )}
+                        >
+                            {type}
+                        </button>
+                    ))}
+                </div>
 
-            <div className="w-full sm:w-48">
-                <Select
-                    value={selectedType}
-                    onChange={(e) => onTypeChange(e.target.value)}
-                    options={[
-                        { value: "all", label: "All Types" },
-                        ...types.map((type) => ({ value: type, label: type })),
-                    ]}
-                    className="w-full"
-                />
-            </div>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div className="w-full sm:w-48">
+                        <Select
+                            value={selectedLocation}
+                            onChange={(e) => onLocationChange(e.target.value)}
+                            options={[
+                                { value: "all", label: "All Locations" },
+                                ...locations.map((loc) => ({ value: loc, label: loc })),
+                            ]}
+                            className="w-full bg-zinc-900/50 border-zinc-800"
+                        />
+                    </div>
 
-            <div className="w-full sm:w-48">
-                <Select
-                    value={selectedLocation}
-                    onChange={(e) => onLocationChange(e.target.value)}
-                    options={[
-                        { value: "all", label: "All Locations" },
-                        ...locations.map((loc) => ({ value: loc, label: loc })),
-                    ]}
-                    className="w-full"
-                />
+                    {hasFilters && (
+                        <Button
+                            variant="ghost"
+                            onClick={onClearFilters}
+                            className="text-zinc-400 hover:text-white hover:bg-zinc-800 shrink-0 h-10 w-10 p-0 rounded-full border border-zinc-800"
+                            title="Clear Filters"
+                        >
+                            <X size={16} />
+                        </Button>
+                    )}
+                </div>
             </div>
-
-            {hasFilters && (
-                <Button
-                    variant="ghost"
-                    onClick={onClearFilters}
-                    className="text-zinc-400 hover:text-white hover:bg-zinc-800 gap-2 ml-auto"
-                >
-                    <X size={14} />
-                    Clear Filters
-                </Button>
-            )}
         </div>
     );
 }

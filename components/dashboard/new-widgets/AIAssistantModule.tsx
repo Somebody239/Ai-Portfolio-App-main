@@ -1,15 +1,31 @@
 import React from 'react';
-import { Sparkles, MessageSquare, ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Sparkles, ArrowRight, BookOpen, Target, Briefcase } from 'lucide-react';
 
 interface AIAssistantModuleProps {
     insight?: { title: string; description: string } | null;
+    onPredictAcceptance?: () => void;
 }
 
-export const AIAssistantModule: React.FC<AIAssistantModuleProps> = ({ insight }) => {
+export const AIAssistantModule: React.FC<AIAssistantModuleProps> = ({ insight, onPredictAcceptance }) => {
+    const router = useRouter();
+
     const prompts = [
-        "Draft engineering essay",
-        "Find summer programs",
-        "Review my resume"
+        {
+            label: "Get AI course suggestions",
+            icon: BookOpen,
+            onClick: () => router.push('/academics?action=recommend')
+        },
+        {
+            label: "Predict acceptance",
+            icon: Target,
+            onClick: onPredictAcceptance || (() => { })
+        },
+        {
+            label: "Get portfolio advice",
+            icon: Briefcase,
+            onClick: () => router.push('/portfolio?action=analyze')
+        }
     ];
 
     return (
@@ -49,9 +65,13 @@ export const AIAssistantModule: React.FC<AIAssistantModuleProps> = ({ insight })
                         {prompts.map((prompt, i) => (
                             <button
                                 key={i}
+                                onClick={prompt.onClick}
                                 className="w-full text-left px-3 py-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-all flex items-center justify-between group/btn"
                             >
-                                <span className="text-sm text-zinc-300 group-hover/btn:text-white">{prompt}</span>
+                                <div className="flex items-center gap-2">
+                                    <prompt.icon size={14} className="text-zinc-500 group-hover/btn:text-[#FF6B35]" />
+                                    <span className="text-sm text-zinc-300 group-hover/btn:text-white">{prompt.label}</span>
+                                </div>
                                 <ArrowRight size={14} className="text-zinc-500 group-hover/btn:text-[#FF6B35] transform group-hover/btn:translate-x-0.5 transition-all" />
                             </button>
                         ))}

@@ -7,6 +7,9 @@ import {
     generatePortfolioAdvicePrompt,
     generateCourseRecommendationPrompt,
     generateGradeAnalysisPrompt,
+    generateBatchAcceptancePredictionPrompt,
+    generatePersonalityAnalysisPrompt,
+    generateEssayAssistancePrompt,
     AIFeatureType,
 } from '@/lib/utils/ai';
 import type {
@@ -16,6 +19,7 @@ import type {
     PortfolioAdviceResult,
     CourseRecommendationResult,
     GradeAnalysisResult,
+    BatchAcceptancePredictionResult,
 } from '@/lib/types';
 
 /**
@@ -112,6 +116,60 @@ export class AIManager {
                 error instanceof Error
                     ? `Failed to predict acceptance: ${error.message}`
                     : 'Failed to predict acceptance'
+            );
+        }
+    }
+
+    /**
+     * Predict acceptance for multiple universities
+     */
+    static async predictAcceptanceBatch(
+        userId: UUID,
+        data: {
+            universities: Array<{
+                name: string;
+                stats?: {
+                    acceptanceRate?: number | null;
+                    avgGpa?: number | null;
+                }
+            }>;
+            studentProfile: {
+                gpa: number;
+                satScore?: number;
+                actScore?: number;
+                apCourses: number;
+                extracurriculars: string[];
+                major: string;
+            }
+        }
+    ): Promise<BatchAcceptancePredictionResult> {
+        const prompt = generateBatchAcceptancePredictionPrompt(data);
+
+        try {
+            const response = await callAIWithRetry(prompt, {
+                featureType: AIFeatureType.AcceptancePrediction,
+                temperature: 0.5,
+                max_tokens: 3000
+            });
+
+            const result = parseAIResponse<BatchAcceptancePredictionResult>(response);
+
+            // Save recommendation (using a generic input structure)
+            await AIRecommendationsRepository.create({
+                user_id: userId,
+                feature_type: AIFeatureType.AcceptancePrediction,
+                input_data: { ...data, type: 'batch' } as Record<string, unknown>,
+                output_data: JSON.parse(JSON.stringify(result)),
+                confidence_score: 85,
+            });
+
+            return result;
+        } catch (error) {
+            console.error('Batch acceptance prediction error:', error);
+            throw new Error(
+                error instanceof Error
+                    ? `Failed to predict acceptance batch: ${error.message}`
+                    : 'Failed to predict acceptance batch'
             );
         }
     }
@@ -282,6 +340,93 @@ export class AIManager {
             }
         } catch (error) {
             console.error('Error clearing cache:', error);
+        }
+    }
+    /**
+     * Analyze personality response for insights and achievements
+     */
+    static async analyzePersonality(
+        userId: UUID,
+        data: {
+            question: string;
+            answer: string;
+        }
+    ): Promise<any> {
+        const prompt = generatePersonalityAnalysisPrompt(data);
+
+        try {
+            const response = await callAIWithRetry(prompt, {
+                featureType: AIFeatureType.PersonalityAnalysis,
+                temperature: 0.5,
+                max_tokens: 1500,
+            });
+
+            const result = parseAIResponse<any>(response);
+
+            // Save recommendation
+            await AIRecommendationsRepository.create({
+                user_id: userId,
+                feature_type: AIFeatureType.PersonalityAnalysis,
+                input_data: data as Record<string, unknown>,
+                output_data: JSON.parse(JSON.stringify(result)),
+                confidence_score: result.rating || 75,
+            });
+
+            return result;
+        } catch (error) {
+            console.error('Personality analysis error:', error);
+            throw new Error(
+                error instanceof Error
+                    ? `Failed to analyze personality: ${error.message}`
+                    : 'Failed to analyze personality'
+            );
+        }
+    }
+    /**
+     * Generate essay assistance (sample, tips, feedback)
+     */
+    static async generateEssayAssistance(
+        userId: UUID,
+        data: {
+            question: string;
+            wordLimit?: number;
+            portfolioContext: {
+                achievements: string[];
+                activities: string[];
+                personalityAnswers: string[];
+                interests: string[];
+            };
+            existingDraft?: string;
+        }
+    ): Promise<any> {
+        const prompt = generateEssayAssistancePrompt(data);
+
+        try {
+            const response = await callAIWithRetry(prompt, {
+                featureType: AIFeatureType.EssayAssistance,
+                temperature: 0.7,
+                max_tokens: 2000,
+            });
+
+            const result = parseAIResponse<any>(response);
+
+            // Save recommendation
+            await AIRecommendationsRepository.create({
+                user_id: userId,
+                feature_type: AIFeatureType.EssayAssistance,
+                input_data: data as Record<string, unknown>,
+                output_data: JSON.parse(JSON.stringify(result)),
+                confidence_score: 80,
+            });
+
+            return result;
+        } catch (error) {
+            console.error('Essay assistance error:', error);
+            throw new Error(
+                error instanceof Error
+                    ? `Failed to generate essay assistance: ${error.message}`
+                    : 'Failed to generate essay assistance'
+            );
         }
     }
 }

@@ -248,6 +248,8 @@ export enum AIFeatureType {
   PortfolioAdvice = 'portfolio_advice',
   CourseRecommendation = 'course_recommendation',
   GradeAnalysis = 'grade_analysis',
+  EssayAssistance = 'essay_assistance',
+  PersonalityAnalysis = 'personality_analysis',
 }
 
 export interface AIQueryLog {
@@ -289,6 +291,21 @@ export interface AcceptancePredictionResult {
   };
   improvementSteps: string[];
   analysis: string;
+}
+
+export interface UniversityPrediction {
+  universityName: string;
+  acceptanceLikelihood: number;
+  matchScore: number;
+  percentile: number;
+  recommendations: string[];
+}
+
+export interface BatchAcceptancePredictionResult {
+  predictions: UniversityPrediction[];
+  overallAnalysis: string;
+  topStrengths: string[];
+  topWeaknesses: string[];
 }
 
 export interface PortfolioRecommendation {
@@ -389,7 +406,17 @@ export interface PersonalityInput {
   user_id: UUID;
   question: string;
   answer: string;
+  is_custom?: boolean;
+  ai_extracted_data?: AIExtractedData | null;
   created_at?: string | null;
+}
+
+export interface AIExtractedData {
+  achievements?: string[];
+  personalityTraits?: string[];
+  skills?: string[];
+  interests?: string[];
+  essayThemes?: string[];
 }
 
 export interface Opportunity {
@@ -416,14 +443,6 @@ export interface UserSettings {
   updated_at?: string | null;
 }
 
-export interface PersonalityInput {
-  id: UUID;
-  user_id: UUID;
-  question: string;
-  answer: string;
-  created_at?: string | null;
-}
-
 export interface PersonalityQuestion {
   id: UUID;
   user_id: UUID;
@@ -439,3 +458,68 @@ export interface EssayPrompt {
   word_limit: number;
 }
 
+export interface ApplicationEssay {
+  id: UUID;
+  user_id: UUID;
+  question_text: string;
+  question_source: string;
+  word_limit?: number;
+  user_draft?: string;
+  ai_suggestions?: string;
+  ai_tips?: string;
+  status: 'not_started' | 'drafting' | 'reviewing' | 'complete';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EssayAIRequest {
+  userId: string;
+  essayId: string;
+  question: string;
+  draft?: string;
+  wordLimit?: number;
+  portfolioContext: {
+    achievements: string[];
+    activities: string[];
+    personalityAnswers: string[];
+    interests: string[];
+  };
+}
+
+export interface EssayAIResponse {
+  responseType: 'sample_essay' | 'follow_up_questions' | 'tips_only';
+  content: string;
+  followUpQuestions?: string[];
+  tips?: string[];
+}
+
+export interface ParsedTranscriptData {
+  courses: ParsedCourse[];
+  gpa?: {
+    weighted?: number;
+    unweighted?: number;
+  };
+  studentInfo?: {
+    name?: string;
+    graduationYear?: number;
+    schoolName?: string;
+  };
+  parsingWarnings?: string[];
+}
+
+export interface ParsedCourse {
+  name: string;
+  year: number; // 9, 10, 11, 12
+  semester: 'Fall' | 'Spring' | 'Full Year';
+  grade: string; // A+, B, 95%, etc.
+  credits?: number;
+  level: 'Regular' | 'Honors' | 'AP' | 'IB' | 'DE';
+  confidence: number; // 0-1, AI's confidence
+}
+
+export interface TranscriptImportResult {
+  imported: Course[];
+  skipped: ParsedCourse[];
+  duplicates: ParsedCourse[];
+  errors: string[];
+}

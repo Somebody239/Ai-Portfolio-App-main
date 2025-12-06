@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import {
     Dialog,
@@ -8,17 +6,18 @@ import {
     DialogTitle,
 } from "@/components/ui/Dialog";
 import { University } from "@/lib/types";
+import { ExternalLink } from "lucide-react";
 
 interface UniversityDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    university: University | null;
+    university: (University & { risk?: string }) | null;
 }
 
 export function UniversityDetailsModal({
     isOpen,
     onClose,
-    university,
+    university
 }: UniversityDetailsModalProps) {
     if (!university) return null;
 
@@ -33,36 +32,53 @@ export function UniversityDetailsModal({
 
     const formatPercent = (val?: number | null) => {
         if (!val && val !== 0) return "N/A";
-        return `${(val! * 100).toFixed(1)}%`;
+
+        // If value is > 1, assume it's already a percentage (e.g. 45.5)
+        if (val > 1) return `${val.toFixed(1)}%`;
+
+        // If value is <= 1, assume it's a decimal (e.g. 0.455)
+        return `${(val * 100).toFixed(1)}%`;
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-800">
                 <DialogHeader>
-                    <div className="flex items-center gap-4 mb-2">
-                        {university.image_url ? (
-                            <img
-                                src={university.image_url}
-                                alt={university.name}
-                                className="h-16 w-16 rounded-full object-cover border-2 border-zinc-700"
-                            />
-                        ) : (
-                            <div className="h-16 w-16 rounded-full bg-zinc-800 flex items-center justify-center text-[#FF6B35] font-bold text-2xl border-2 border-zinc-700">
-                                {university.name.charAt(0)}
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                        <div className="flex items-center gap-4">
+                            {university.image_url ? (
+                                <img
+                                    src={university.image_url}
+                                    alt={university.name}
+                                    className="h-16 w-16 rounded-full object-cover border-2 border-zinc-700"
+                                />
+                            ) : (
+                                <div className="h-16 w-16 rounded-full bg-zinc-800 flex items-center justify-center text-[#FF6B35] font-bold text-2xl border-2 border-zinc-700">
+                                    {university.name.charAt(0)}
+                                </div>
+                            )}
+                            <div>
+                                <DialogTitle className="text-2xl font-bold text-white">
+                                    {university.name}
+                                </DialogTitle>
+                                <div className="flex items-center gap-2 mt-1 text-zinc-400 text-sm">
+                                    <span>{university.city}, {university.state}</span>
+                                    {university.website && (
+                                        <>
+                                            <span>•</span>
+                                            <a
+                                                href={`https://${university.website}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[#FF6B35] hover:text-[#FF8F6B] flex items-center gap-1 hover:underline"
+                                            >
+                                                <ExternalLink size={12} />
+                                                Visit Website
+                                            </a>
+                                        </>
+                                    )}
+                                </div>
                             </div>
-                        )}
-                        <div>
-                            <DialogTitle className="text-2xl font-bold text-white">
-                                {university.name}
-                            </DialogTitle>
-                            <p className="text-zinc-400">
-                                {university.city}, {university.state} • {university.website && (
-                                    <a href={`https://${university.website}`} target="_blank" rel="noopener noreferrer" className="text-[#FF6B35] hover:underline">
-                                        {university.website}
-                                    </a>
-                                )}
-                            </p>
                         </div>
                     </div>
                 </DialogHeader>

@@ -13,7 +13,7 @@ export class PersonalityRepository {
         return data || [];
     }
 
-    async upsert(userId: string, question: string, answer: string): Promise<PersonalityInput> {
+    async upsert(userId: string, question: string, answer: string, isCustom: boolean = false): Promise<PersonalityInput> {
         const { data: existing } = await supabase
             .from('personality_inputs')
             .select('*')
@@ -27,7 +27,8 @@ export class PersonalityRepository {
             return await this.create({
                 user_id: userId,
                 question,
-                answer
+                answer,
+                is_custom: isCustom
             });
         }
     }

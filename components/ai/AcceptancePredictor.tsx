@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2, TrendingUp, Award, Target } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Loader2, TrendingUp, Award, Target, X, Calculator, RefreshCw } from 'lucide-react';
 import { AIManager } from '@/managers/AIManager';
 import { useUser } from '@/hooks/useUser';
-import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import type { AcceptancePredictionResult } from '@/lib/types';
 
@@ -23,6 +22,31 @@ export function AcceptancePredictor() {
         extracurriculars: '',
     });
 
+    // Load persisted result on mount
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('ai_acceptance_prediction');
+            if (saved) {
+                try {
+                    setResult(JSON.parse(saved));
+                } catch (e) {
+                    console.error("Failed to load persisted prediction", e);
+                }
+            }
+        }
+    }, []);
+
+    // Persist result on change
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            if (result) {
+                localStorage.setItem('ai_acceptance_prediction', JSON.stringify(result));
+            } else {
+                localStorage.removeItem('ai_acceptance_prediction');
+            }
+        }
+    }, [result]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -32,7 +56,6 @@ export function AcceptancePredictor() {
         }
 
         setLoading(true);
-        setResult(null);
 
         try {
             const prediction = await AIManager.predictAcceptance(user.id, {
@@ -58,185 +81,237 @@ export function AcceptancePredictor() {
         }
     };
 
+    const handleDismiss = () => {
+        setResult(null);
+        setFormData({
+            universityName: '',
+            major: '',
+            gpa: '',
+            satScore: '',
+            actScore: '',
+            apCourses: '',
+            extracurriculars: '',
+        });
+        toast.info("Result dismissed");
+    };
+
     return (
-        <div className="space-y-6">
-            <div>
-                <h2 className="text-2xl font-bold mb-2">University Acceptance Predictor</h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                    Get an AI-powered estimate of your acceptance likelihood
-                </p>
+        <div className="space-y-6 max-w-4xl mx-auto">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-2xl font-bold mb-2 text-white">Acceptance Predictor</h2>
+                    <p className="text-zinc-400">
+                        Get an AI-powered estimate of your acceptance likelihood
+                    </p>
+                </div>
+                {result && (
+                    <button
+                        onClick={handleDismiss}
+                        className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-sm"
+                    >
+                        <RefreshCw size={16} /> New Prediction
+                    </button>
+                )}
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">University Name *</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.universityName}
-                            onChange={(e) => setFormData({ ...formData, universityName: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
-                            placeholder="e.g., Stanford University"
-                        />
-                    </div>
+            {!result ? (
+                <form onSubmit={handleSubmit} className="bg-zinc-900/50 backdrop-blur-sm rounded-xl border border-zinc-800 p-6 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1.5 text-zinc-300">University Name *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.universityName}
+                                    onChange={(e) => setFormData({ ...formData, universityName: e.target.value })}
+                                    className="w-full px-3 py-2.5 border border-zinc-700 rounded-lg bg-zinc-900 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                                    placeholder="e.g., Stanford University"
+                                />
+                            </div>
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Intended Major *</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.major}
-                            onChange={(e) => setFormData({ ...formData, major: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
-                            placeholder="e.g., Computer Science"
-                        />
-                    </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1.5 text-zinc-300">Intended Major *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.major}
+                                    onChange={(e) => setFormData({ ...formData, major: e.target.value })}
+                                    className="w-full px-3 py-2.5 border border-zinc-700 rounded-lg bg-zinc-900 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                                    placeholder="e.g., Computer Science"
+                                />
+                            </div>
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">GPA (4.0 scale) *</label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            max="4"
-                            required
-                            value={formData.gpa}
-                            onChange={(e) => setFormData({ ...formData, gpa: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
-                            placeholder="3.85"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">SAT Score (optional)</label>
-                        <input
-                            type="number"
-                            min="400"
-                            max="1600"
-                            value={formData.satScore}
-                            onChange={(e) => setFormData({ ...formData, satScore: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
-                            placeholder="1450"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">ACT Score (optional)</label>
-                        <input
-                            type="number"
-                            min="1"
-                            max="36"
-                            value={formData.actScore}
-                            onChange={(e) => setFormData({ ...formData, actScore: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
-                            placeholder="32"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Number of AP/IB Courses</label>
-                        <input
-                            type="number"
-                            min="0"
-                            value={formData.apCourses}
-                            onChange={(e) => setFormData({ ...formData, apCourses: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
-                            placeholder="8"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Extracurriculars (comma-separated)
-                    </label>
-                    <textarea
-                        value={formData.extracurriculars}
-                        onChange={(e) => setFormData({ ...formData, extracurriculars: e.target.value })}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
-                        placeholder="Debate Team Captain, Robotics Club, Volunteering at Local Hospital"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                >
-                    {loading ? (
-                        <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Analyzing...
-                        </>
-                    ) : (
-                        <>
-                            <Target className="w-5 h-5" />
-                            Predict Acceptance
-                        </>
-                    )}
-                </button>
-            </form>
-
-            {/* Results */}
-            {result && (
-                <div className="space-y-4">
-                    {/* Acceptance Likelihood */}
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xl font-bold">Acceptance Likelihood</h3>
-                            <Award className="w-8 h-8" />
+                            <div>
+                                <label className="block text-sm font-medium mb-1.5 text-zinc-300">GPA (4.0 scale) *</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    max="4"
+                                    required
+                                    value={formData.gpa}
+                                    onChange={(e) => setFormData({ ...formData, gpa: e.target.value })}
+                                    className="w-full px-3 py-2.5 border border-zinc-700 rounded-lg bg-zinc-900 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                                    placeholder="3.85"
+                                />
+                            </div>
                         </div>
-                        <div className="text-5xl font-bold mb-2">{result.acceptanceLikelihood}%</div>
-                        <div className="text-sm opacity-90">
-                            Confidence: {result.confidenceLevel}
-                        </div>
-                    </div>
 
-                    {/* Score Breakdown */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5" />
-                            Score Breakdown
-                        </h3>
-                        <div className="space-y-3">
-                            {Object.entries(result.scoreBreakdown).map(([key, value]) => (
-                                <div key={key}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                                        <span className="font-semibold">{value}%</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                        <div
-                                            className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                                            style={{ width: `${value}%` }}
-                                        />
-                                    </div>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1.5 text-zinc-300">SAT Score</label>
+                                    <input
+                                        type="number"
+                                        min="400"
+                                        max="1600"
+                                        value={formData.satScore}
+                                        onChange={(e) => setFormData({ ...formData, satScore: e.target.value })}
+                                        className="w-full px-3 py-2.5 border border-zinc-700 rounded-lg bg-zinc-900 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                                        placeholder="1450"
+                                    />
                                 </div>
-                            ))}
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1.5 text-zinc-300">ACT Score</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="36"
+                                        value={formData.actScore}
+                                        onChange={(e) => setFormData({ ...formData, actScore: e.target.value })}
+                                        className="w-full px-3 py-2.5 border border-zinc-700 rounded-lg bg-zinc-900 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                                        placeholder="32"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1.5 text-zinc-300">AP/IB Courses</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formData.apCourses}
+                                    onChange={(e) => setFormData({ ...formData, apCourses: e.target.value })}
+                                    className="w-full px-3 py-2.5 border border-zinc-700 rounded-lg bg-zinc-900 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                                    placeholder="Number of courses"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1.5 text-zinc-300">
+                                    Extracurriculars
+                                </label>
+                                <textarea
+                                    value={formData.extracurriculars}
+                                    onChange={(e) => setFormData({ ...formData, extracurriculars: e.target.value })}
+                                    rows={3}
+                                    className="w-full px-3 py-2.5 border border-zinc-700 rounded-lg bg-zinc-900 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-sm"
+                                    placeholder="Debate Team Captain, Robotics Club..."
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Analysis */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                        <h3 className="text-lg font-semibold mb-3">Detailed Analysis</h3>
-                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{result.analysis}</p>
+                    <div className="pt-2">
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-600/50 disabled:cursor-not-allowed text-white px-6 py-3.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Analyzing Profile...
+                                </>
+                            ) : (
+                                <>
+                                    <Target className="w-5 h-5" />
+                                    Predict Acceptance Chance
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            ) : (
+                /* Results Display */
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {/* Header Card */}
+                    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-8 text-white shadow-xl shadow-emerald-900/20">
+                        <button
+                            onClick={handleDismiss}
+                            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
+                                <Award className="w-8 h-8" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-medium opacity-90">Acceptance Likelihood</h3>
+                                <p className="text-sm opacity-75">{formData.universityName || 'Target University'}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-end gap-4">
+                            <div className="text-6xl font-bold tracking-tight text-white">{result.acceptanceLikelihood.toFixed(1)}%</div>
+                            <div className="mb-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-100 text-sm font-medium backdrop-blur-sm border border-amber-400/20">
+                                {result.confidenceLevel} Confidence
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Score Breakdown */}
+                        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800 p-6">
+                            <h3 className="text-lg font-semibold mb-6 flex items-center gap-2 text-white">
+                                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                                Score Breakdown
+                            </h3>
+                            <div className="space-y-4">
+                                {Object.entries(result.scoreBreakdown).map(([key, value]) => (
+                                    <div key={key}>
+                                        <div className="flex justify-between text-sm mb-2">
+                                            <span className="capitalize text-zinc-400">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                                            <span className="font-semibold text-white">{value}%</span>
+                                        </div>
+                                        <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                                            <div
+                                                className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-1000 ease-out"
+                                                style={{ width: `${value}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Analysis */}
+                        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800 p-6">
+                            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                                <Calculator className="w-5 h-5 text-emerald-400" />
+                                Detailed Analysis
+                            </h3>
+                            <p className="text-zinc-300 leading-relaxed text-sm">
+                                {result.analysis}
+                            </p>
+                        </div>
                     </div>
 
                     {/* Improvement Steps */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                        <h3 className="text-lg font-semibold mb-3">How to Improve Your Chances</h3>
-                        <ul className="space-y-2">
+                    <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800 p-6">
+                        <h3 className="text-lg font-semibold mb-6 text-white">How to Improve Your Chances</h3>
+                        <div className="grid gap-4">
                             {result.improvementSteps.map((step, i) => (
-                                <li key={i} className="flex items-start gap-3">
-                                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-semibold">
+                                <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-zinc-800/30 border border-zinc-800/50 hover:bg-zinc-800/50 transition-colors">
+                                    <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-sm font-bold">
                                         {i + 1}
                                     </span>
-                                    <span className="text-gray-700 dark:text-gray-300">{step}</span>
-                                </li>
+                                    <p className="text-zinc-300 text-sm leading-relaxed mt-1">{step}</p>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </div>
                 </div>
             )}

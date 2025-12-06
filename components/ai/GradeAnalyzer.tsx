@@ -129,7 +129,7 @@ export function GradeAnalyzer() {
                     <select
                         value={selectedCourseId}
                         onChange={(e) => setSelectedCourseId(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500"
                         disabled={loadingCourses}
                     >
                         <option value="">Choose a course...</option>
@@ -143,17 +143,17 @@ export function GradeAnalyzer() {
 
                 {selectedCourseId && (
                     <>
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">Current Grade</p>
-                                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                    <p className="text-sm text-emerald-800 dark:text-emerald-200 font-medium">Current Grade</p>
+                                    <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
                                         {currentGrade.toFixed(1)}%
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm text-blue-800 dark:text-blue-200">Assignments</p>
-                                    <p className="text-2xl font-semibold text-blue-600 dark:text-blue-400">
+                                    <p className="text-sm text-emerald-800 dark:text-emerald-200">Assignments</p>
+                                    <p className="text-2xl font-semibold text-emerald-600 dark:text-emerald-400">
                                         {assignments.length}
                                     </p>
                                 </div>
@@ -169,7 +169,7 @@ export function GradeAnalyzer() {
                                 step="0.1"
                                 value={targetGrade}
                                 onChange={(e) => setTargetGrade(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500"
                                 placeholder="e.g., 90"
                             />
                         </div>
@@ -177,7 +177,7 @@ export function GradeAnalyzer() {
                         <button
                             onClick={handleAnalyze}
                             disabled={loading || !selectedCourseId}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <>
@@ -204,7 +204,7 @@ export function GradeAnalyzer() {
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
                                 <div className="text-center mb-4">
-                                    <p className="text-5xl font-bold text-blue-600">{result.currentStanding.grade.toFixed(1)}%</p>
+                                    <p className="text-5xl font-bold text-emerald-600">{result.currentStanding.grade.toFixed(1)}%</p>
                                     <p className="text-2xl font-semibold text-gray-600 dark:text-gray-400 mt-2">
                                         {result.currentStanding.letterGrade}
                                     </p>
@@ -212,7 +212,7 @@ export function GradeAnalyzer() {
                             </div>
                             <div className="space-y-4">
                                 <div>
-                                    <h4 className="font-semibold text-green-600 dark:text-green-400 mb-2">Strengths</h4>
+                                    <h4 className="font-semibold text-emerald-600 dark:text-emerald-400 mb-2">Strengths</h4>
                                     <ul className="space-y-1">
                                         {result.currentStanding.strengths.map((s, i) => (
                                             <li key={i} className="text-sm text-gray-700 dark:text-gray-300">✓ {s}</li>
@@ -234,17 +234,17 @@ export function GradeAnalyzer() {
                     {/* Grade Projections */}
                     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <Target className="w-5 h-5 text-purple-500" />
+                            <Target className="w-5 h-5 text-emerald-500" />
                             Grade Projections
                         </h3>
                         <div className="grid grid-cols-3 gap-4">
-                            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                <p className="text-sm text-green-800 dark:text-green-200 font-medium">Best Case</p>
-                                <p className="text-3xl font-bold text-green-600 dark:text-green-400">{result.projections.bestCase}%</p>
+                            <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                                <p className="text-sm text-emerald-800 dark:text-emerald-200 font-medium">Best Case</p>
+                                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{result.projections.bestCase}%</p>
                             </div>
-                            <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                                <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">Most Likely</p>
-                                <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{result.projections.mostLikely}%</p>
+                            <div className="text-center p-4 bg-amber-300/10 rounded-lg">
+                                <p className="text-sm text-amber-300 font-medium">Most Likely</p>
+                                <p className="text-3xl font-bold text-amber-300">{result.projections.mostLikely}%</p>
                             </div>
                             <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
                                 <p className="text-sm text-red-800 dark:text-red-200 font-medium">Worst Case</p>
@@ -253,8 +253,8 @@ export function GradeAnalyzer() {
                         </div>
                         {result.projections.toReachTarget && (
                             <div className={`mt-4 p-4 rounded-lg ${result.projections.toReachTarget.achievable
-                                ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'
-                                : 'bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800'
+                                ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800'
+                                : 'bg-amber-300/10 border border-amber-300/20'
                                 }`}>
                                 <p className="text-sm font-medium mb-1">
                                     {result.projections.toReachTarget.achievable ? 'Target is achievable!' : 'Target may be challenging'}
@@ -267,7 +267,7 @@ export function GradeAnalyzer() {
                     </div>
 
                     {/* Study Strategy */}
-                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-6 text-white">
+                    <div className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-amber-300 rounded-lg p-6 text-black">
                         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                             <Clock className="w-5 h-5" />
                             Recommended Study Strategy
@@ -285,15 +285,15 @@ export function GradeAnalyzer() {
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-4 mb-4">
-                            <div className="bg-white/10 rounded-lg p-3">
+                            <div className="bg-white/20 rounded-lg p-3">
                                 <p className="text-xs opacity-80 mb-1">Homework</p>
                                 <p className="font-semibold">{result.studyStrategy.timeAllocation.homework}</p>
                             </div>
-                            <div className="bg-white/10 rounded-lg p-3">
+                            <div className="bg-white/20 rounded-lg p-3">
                                 <p className="text-xs opacity-80 mb-1">Test Prep</p>
                                 <p className="font-semibold">{result.studyStrategy.timeAllocation.testPrep}</p>
                             </div>
-                            <div className="bg-white/10 rounded-lg p-3">
+                            <div className="bg-white/20 rounded-lg p-3">
                                 <p className="text-xs opacity-80 mb-1">Review</p>
                                 <p className="font-semibold">{result.studyStrategy.timeAllocation.review}</p>
                             </div>
@@ -311,8 +311,8 @@ export function GradeAnalyzer() {
 
                     {/* Weakness Patterns */}
                     {result.weaknessPatterns.length > 0 && (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800 p-6">
-                            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-orange-600 dark:text-orange-400">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border border-amber-300/20 p-6">
+                            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-amber-300">
                                 <AlertTriangle className="w-5 h-5" />
                                 Pattern Analysis
                             </h3>

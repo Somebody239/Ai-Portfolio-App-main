@@ -7,7 +7,7 @@ export class UniversitiesRepository {
       .from('universities_temp')
       .select('*')
       .order('name', { ascending: true })
-      .limit(2000) // Show all universities (1,612 total)
+      .limit(5000) // Show all universities (increased limit)
 
     if (error) throw error
     return (data || []).map(this.mapToUniversity)

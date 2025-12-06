@@ -28,7 +28,7 @@ export default function ProfileView() {
     return (
       <AppShell>
         <div className="flex h-full min-h-[300px] items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-white" />
+          <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
         </div>
       </AppShell>
     );
@@ -79,7 +79,7 @@ export default function ProfileView() {
         <div className="flex items-center gap-3">
           <InteractiveHoverButton
             text="Edit Profile"
-            className="w-40"
+            className="w-40 bg-zinc-800 text-white"
             onClick={() => setIsEditModalOpen(true)}
           />
           <button className="rounded-xl border border-zinc-800 px-4 py-2 text-sm text-zinc-300 hover:border-zinc-600 hover:text-white transition">
@@ -204,7 +204,7 @@ export default function ProfileView() {
               </ActionButton>
               <ActionButton
                 onClick={() => window.location.href = '/ai/portfolio-advisor'}
-                className="w-full justify-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 border-none"
+                className="w-full justify-center bg-gradient-to-r from-emerald-600 to-amber-300 text-black hover:from-emerald-500 hover:to-amber-300/90 border-none font-medium"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 Get AI Feedback
@@ -228,4 +228,3 @@ export default function ProfileView() {
     </AppShell>
   );
 }
-
