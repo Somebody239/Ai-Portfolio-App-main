@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { AlertCircle, X } from "lucide-react";
+import Image from "next/image";
 import { Card } from "@/components/ui/Atoms";
 import { University, AIRecommendation } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -72,11 +73,15 @@ export function UniversityRow({ university, onRemove, onClick }: UniversityRowPr
     >
       <div className="flex items-center space-x-4">
         {university.image_url ? (
-          <img
-            src={university.image_url}
-            alt={university.name}
-            className="h-12 w-12 rounded-full object-cover border-2 border-zinc-800"
-          />
+          <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-zinc-800">
+            <Image
+              src={university.image_url}
+              alt={university.name}
+              fill
+              className="object-cover"
+              sizes="48px"
+            />
+          </div>
         ) : (
           <div className="h-12 w-12 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold text-lg border border-zinc-700">
             {university.name.charAt(0)}

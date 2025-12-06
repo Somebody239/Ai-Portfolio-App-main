@@ -36,7 +36,7 @@ export function OpportunitiesFilter({
                         className={cn(
                             "px-4 py-2 rounded-full text-sm font-medium transition-all border",
                             selectedType === "all"
-                                ? "bg-white text-black border-white"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/50"
                                 : "bg-zinc-900/50 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white"
                         )}
                     >
@@ -49,7 +49,7 @@ export function OpportunitiesFilter({
                             className={cn(
                                 "px-4 py-2 rounded-full text-sm font-medium transition-all border",
                                 selectedType === type
-                                    ? "bg-white text-black border-white"
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/50"
                                     : "bg-zinc-900/50 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white"
                             )}
                         >
@@ -67,7 +67,7 @@ export function OpportunitiesFilter({
                                 { value: "all", label: "All Locations" },
                                 ...locations.map((loc) => ({ value: loc, label: loc })),
                             ]}
-                            className="w-full bg-zinc-900/50 border-zinc-800"
+                            className="w-full bg-zinc-900/50 border-zinc-800 focus:ring-emerald-500/50"
                         />
                     </div>
 

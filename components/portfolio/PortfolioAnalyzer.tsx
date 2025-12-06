@@ -25,7 +25,7 @@ export function PortfolioAnalyzer({ userId, data, autoAnalyze = false }: Portfol
     const [error, setError] = useState<string | null>(null);
     const [hasAutoAnalyzed, setHasAutoAnalyzed] = useState(false);
 
-    const handleAnalyze = async () => {
+    const handleAnalyze = React.useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
@@ -37,14 +37,14 @@ export function PortfolioAnalyzer({ userId, data, autoAnalyze = false }: Portfol
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [userId, data]);
 
     React.useEffect(() => {
         if (autoAnalyze && !hasAutoAnalyzed && !advice && !isLoading) {
             setHasAutoAnalyzed(true);
             handleAnalyze();
         }
-    }, [autoAnalyze, hasAutoAnalyzed, advice, isLoading]);
+    }, [autoAnalyze, hasAutoAnalyzed, advice, isLoading, handleAnalyze]);
 
     if (advice) {
         return (

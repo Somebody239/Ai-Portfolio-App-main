@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface BlurredCardProps {
@@ -39,10 +40,12 @@ export function BlurredCard({
 
             {imageSrc && (
                 <div className="absolute inset-0 z-0">
-                    <img
+                    <Image
                         alt="Card background"
-                        className="w-full h-full object-cover opacity-50 scale-110"
+                        className="object-cover opacity-50 scale-110"
                         src={imageSrc}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                 </div>
             )}

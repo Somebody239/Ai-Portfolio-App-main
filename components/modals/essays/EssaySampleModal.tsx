@@ -23,7 +23,7 @@ export function EssaySampleModal({
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const generateSample = async () => {
+    const generateSample = React.useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -53,13 +53,13 @@ export function EssaySampleModal({
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId, question, wordLimit]);
 
     useEffect(() => {
         if (isOpen && !data) {
             generateSample();
         }
-    }, [isOpen]);
+    }, [isOpen, data, generateSample]);
 
     const handleCopy = () => {
         if (data?.sampleEssay) {

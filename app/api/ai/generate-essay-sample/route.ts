@@ -5,13 +5,18 @@ import { ExtracurricularsRepository } from '@/lib/supabase/repositories/extracur
 import { PersonalityRepository } from '@/lib/supabase/repositories/personality.repository';
 import { UsersRepository } from '@/lib/supabase/repositories/users.repository';
 
+import { z } from 'zod';
+
+const generateEssaySchema = z.object({
+    userId: z.string().uuid(),
+    question: z.string().min(5),
+    wordLimit: z.number().optional()
+});
+
 export async function POST(request: Request) {
     try {
-        const { userId, question, wordLimit } = await request.json();
-
-        if (!userId || !question) {
-            return NextResponse.json({ error: 'Missing userId or question' }, { status: 400 });
-        }
+        const body = await request.json();
+        const { userId, question, wordLimit } = generateEssaySchema.parse(body);
 
         // Instantiate repositories
         const achievementsRepo = new AchievementsRepository();
@@ -42,6 +47,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, result });
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json({ error: error.errors }, { status: 400 });
+        }
         console.error('Essay Generation Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

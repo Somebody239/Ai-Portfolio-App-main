@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card } from "@/components/ui/Atoms";
 import { Button } from "@/components/ui/Button";
 import { EssayManager } from "@/managers/EssayManager";
@@ -18,7 +18,7 @@ export function ApplicationEssaysSection({ userId }: ApplicationEssaysSectionPro
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const manager = new EssayManager();
+    const manager = useMemo(() => new EssayManager(), []);
 
     const loadEssays = useCallback(async () => {
         try {
@@ -29,7 +29,7 @@ export function ApplicationEssaysSection({ userId }: ApplicationEssaysSectionPro
         } finally {
             setLoading(false);
         }
-    }, [userId]);
+    }, [userId, manager]);
 
     useEffect(() => {
         loadEssays();

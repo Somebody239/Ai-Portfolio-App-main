@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -103,7 +104,15 @@ export function UniversitySelectModal({
                 {/* Website Link Section */}
                 <div className="flex flex-col items-end gap-2">
                   {selectedUniversity.image_url && (
-                    <img src={selectedUniversity.image_url} alt={selectedUniversity.name} className="h-10 w-10 rounded-full object-cover" />
+                    <div className="relative h-10 w-10 rounded-full overflow-hidden">
+                      <Image
+                        src={selectedUniversity.image_url}
+                        alt={selectedUniversity.name}
+                        fill
+                        className="object-cover"
+                        sizes="40px"
+                      />
+                    </div>
                   )}
                   {selectedUniversity.website && (
                     <a

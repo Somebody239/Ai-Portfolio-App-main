@@ -81,7 +81,7 @@ export default function OpportunitiesView() {
 
                     {loading ? (
                         <div className="flex flex-col items-center justify-center h-64 gap-4">
-                            <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+                            <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
                             <p className="text-zinc-500 animate-pulse">Finding opportunities...</p>
                         </div>
                     ) : (
@@ -117,7 +117,7 @@ export default function OpportunitiesView() {
                                         action={
                                             <button
                                                 onClick={handleClearFilters}
-                                                className="text-indigo-400 hover:text-indigo-300 text-sm font-medium underline underline-offset-4"
+                                                className="text-emerald-400 hover:text-emerald-300 text-sm font-medium underline underline-offset-4"
                                             >
                                                 Clear all filters
                                             </button>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import {
     Dialog,
     DialogContent,
@@ -67,11 +68,15 @@ export function UniversityRiskModal({
                 <div className="py-4 space-y-6">
                     <div className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700">
                         {university.image_url ? (
-                            <img
-                                src={university.image_url}
-                                alt={university.name}
-                                className="h-10 w-10 rounded-full object-cover"
-                            />
+                            <div className="relative h-10 w-10 rounded-full overflow-hidden">
+                                <Image
+                                    src={university.image_url}
+                                    alt={university.name}
+                                    fill
+                                    className="object-cover"
+                                    sizes="40px"
+                                />
+                            </div>
                         ) : (
                             <div className="h-10 w-10 rounded-full bg-zinc-700 flex items-center justify-center text-[#FF6B35] font-bold">
                                 {university.name.charAt(0)}

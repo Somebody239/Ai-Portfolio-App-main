@@ -23,7 +23,7 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
             transition={{ duration: 0.3 }}
             className="h-full"
         >
-            <Card className="h-full flex flex-col overflow-hidden hover:border-zinc-700 transition-colors duration-300 group bg-zinc-900/50 border-zinc-800">
+            <Card className="h-full flex flex-col overflow-hidden hover:border-emerald-500/30 transition-colors duration-300 group bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
                 {opportunity.image_url && (
                     <div className="h-48 w-full overflow-hidden relative">
                         <Image
@@ -32,25 +32,25 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/20 to-transparent opacity-80" />
 
                         <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
                             {opportunity.type && (
-                                <Badge text={opportunity.type} variant="neutral" className="bg-zinc-900/80 backdrop-blur-sm border-zinc-700 text-white" />
+                                <Badge text={opportunity.type} variant="neutral" className="bg-zinc-900/80 backdrop-blur-md border-zinc-700 text-white shadow-lg" />
                             )}
                             {cost && (
                                 <Badge
                                     text={cost}
                                     variant={cost.toLowerCase().includes('free') ? 'success' : 'neutral'}
-                                    className="bg-zinc-900/80 backdrop-blur-sm border-zinc-700"
+                                    className="bg-zinc-900/80 backdrop-blur-md border-zinc-700 shadow-lg"
                                 />
                             )}
                         </div>
                     </div>
                 )}
 
-                <div className="p-5 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-emerald-400 transition-colors">
+                <div className="p-6 flex flex-col flex-grow">
+                    <h3 className="text-xl font-bold text-white mb-3 leading-snug group-hover:text-emerald-400 transition-colors">
                         {opportunity.title}
                     </h3>
 
@@ -73,14 +73,14 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
                         )}
                     </div>
 
-                    <p className="text-zinc-400 text-sm mb-6 line-clamp-3 flex-grow leading-relaxed">
+                    <p className="text-zinc-400 text-sm mb-6 flex-grow leading-relaxed whitespace-pre-line line-clamp-4">
                         {opportunity.description}
                     </p>
 
                     <div className="space-y-4 mt-auto">
                         <div className="flex items-center justify-between text-xs text-zinc-500 pt-4 border-t border-zinc-800/50">
                             {deadline && (
-                                <div className="flex items-center gap-1.5 text-amber-400/80">
+                                <div className="flex items-center gap-1.5 text-amber-300">
                                     <Clock size={14} />
                                     <span>Deadline: {deadline}</span>
                                 </div>
@@ -99,7 +99,7 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
                             rel="noopener noreferrer"
                             className="block w-full"
                         >
-                            <Button className="w-full justify-center gap-2 bg-white text-black hover:bg-zinc-200 transition-colors font-medium">
+                            <Button className="w-full justify-center gap-2 bg-zinc-100 text-zinc-900 hover:bg-white hover:scale-[1.02] transition-all font-medium border-none">
                                 Apply Now
                                 <ExternalLink size={14} />
                             </Button>

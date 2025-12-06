@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import {
     Dialog,
     DialogContent,
@@ -47,11 +48,15 @@ export function UniversityDetailsModal({
                     <div className="flex items-start justify-between gap-4 mb-2">
                         <div className="flex items-center gap-4">
                             {university.image_url ? (
-                                <img
-                                    src={university.image_url}
-                                    alt={university.name}
-                                    className="h-16 w-16 rounded-full object-cover border-2 border-zinc-700"
-                                />
+                                <div className="relative h-16 w-16 rounded-full overflow-hidden border-2 border-zinc-700">
+                                    <Image
+                                        src={university.image_url}
+                                        alt={university.name}
+                                        fill
+                                        className="object-cover"
+                                        sizes="64px"
+                                    />
+                                </div>
                             ) : (
                                 <div className="h-16 w-16 rounded-full bg-zinc-800 flex items-center justify-center text-[#FF6B35] font-bold text-2xl border-2 border-zinc-700">
                                     {university.name.charAt(0)}
