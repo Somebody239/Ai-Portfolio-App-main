@@ -9,7 +9,7 @@ export function Footer() {
                 <div className="grid gap-8 md:grid-cols-3">
                     {/* Brand */}
                     <div>
-                        <h3 className="mb-4 text-xl font-bold text-white">UniPlanner.ai</h3>
+                        <h3 className="mb-4 text-xl font-bold text-white">Path2Uni</h3>
                         <p className="text-sm text-zinc-400">
                             AI-powered university application portfolio management for ambitious students.
                         </p>
@@ -61,7 +61,7 @@ export function Footer() {
 
                 <div className="mt-12 border-t border-zinc-800 pt-8 text-center">
                     <p className="text-xs text-zinc-500 font-mono">
-                        © {new Date().getFullYear()} UniPlanner.ai. Powered by AI, built for students.
+                        © {new Date().getFullYear()} Path2Uni. Powered by AI, built for students.
                     </p>
                 </div>
             </div>

@@ -93,7 +93,7 @@ function MobileSidebar({ className, children }: { className?: string; children: 
   return (
     <div className="md:hidden flex flex-col w-full">
       <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 p-4">
-        <span className="text-sm font-bold text-white tracking-tight">UniPlanner</span>
+        <span className="text-sm font-bold text-white tracking-tight">Path2Uni</span>
         <button onClick={() => setOpen(!open)} className="text-zinc-400 hover:text-white">
           <Menu size={24} />
         </button>

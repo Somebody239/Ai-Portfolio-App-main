@@ -62,7 +62,6 @@ export function AIInsightsPanel({ userId, responses }: AIInsightsPanelProps) {
 
     const handleAddToPortfolio = (item: string, type: string) => {
         // TODO: Implement adding to achievements/extracurriculars
-        console.log(`Add to portfolio: ${type} - ${item}`);
         alert(`Feature coming soon: Add "${item}" to your ${type}`);
     };
 

@@ -25,7 +25,7 @@ export function CTASection() {
                         Journey?
                     </h2>
                     <p className="mb-10 text-lg text-zinc-400 md:text-xl">
-                        Join thousands of students using UniPlanner.ai to organize their portfolios, track their progress, and get into their dream universities.
+                        Join thousands of students using Path2Uni to organize their portfolios, track their progress, and get into their dream universities.
                     </p>
 
                     <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">

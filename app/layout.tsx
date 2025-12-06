@@ -4,8 +4,12 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary'
 import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
-  title: 'UniPlanner.ai - Portfolio Management',
+  title: 'Path2Uni',
   description: 'AI-powered university application portfolio management',
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
 }
 
 export const viewport: Viewport = {

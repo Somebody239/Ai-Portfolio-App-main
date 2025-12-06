@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import {
   Sidebar,
   SidebarBody,
@@ -78,14 +79,14 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             <div className="h-10 flex items-center gap-3 mb-8 px-1">
-              <div className="h-6 w-6 rounded bg-zinc-100 flex-shrink-0" />
+              <Image src="/logo-white.png" alt="Path2Uni" width={30} height={30} className="h-[30px] w-[30px] flex-shrink-0" />
               {open && (
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="font-bold text-lg tracking-tight"
                 >
-                  UniPlanner
+                  Path2Uni
                 </motion.span>
               )}
             </div>

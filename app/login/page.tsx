@@ -176,7 +176,7 @@ export default function LoginPage() {
       </div>
 
       <div className="fixed bottom-6 text-zinc-600 text-xs font-mono z-10">
-        Powered by UniPlanner AI
+        Powered by Path2Uni
       </div>
     </div>
   );

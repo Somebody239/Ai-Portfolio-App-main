@@ -24,7 +24,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, user
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF6B35] to-[#FF8F6B] flex items-center justify-center">
                         <span className="font-bold text-white">U</span>
                     </div>
-                    <span className="font-bold text-lg">UniPlanner</span>
+                    <span className="font-bold text-lg">Path2Uni</span>
                 </div>
                 <button className="p-2 hover:bg-zinc-900 rounded-lg">
                     <Menu size={20} />
@@ -37,7 +37,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, user
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#FF8F6B] flex items-center justify-center shadow-lg shadow-[#FF6B35]/20">
                         <span className="font-bold text-xl text-white">U</span>
                     </div>
-                    <span className="font-bold text-xl tracking-tight">UniPlanner</span>
+                    <span className="font-bold text-xl tracking-tight">Path2Uni</span>
                 </div>
 
                 <nav className="flex-1 space-y-2">
@@ -81,8 +81,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, user
 const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode; label: string; active?: boolean }) => (
     <button
         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${active
-                ? 'bg-[#FF6B35]/10 text-[#FF6B35]'
-                : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
+            ? 'bg-[#FF6B35]/10 text-[#FF6B35]'
+            : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
             }`}
     >
         <span className={`${active ? 'text-[#FF6B35]' : 'text-zinc-500 group-hover:text-white'}`}>

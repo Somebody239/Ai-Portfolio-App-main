@@ -89,10 +89,7 @@ export function PersonalityQuestionModal({
 
             // Trigger AI Analysis
             const extractedCount = await analyzeTextForAchievements(answer);
-            if (extractedCount > 0) {
-                // In a real app, we'd use a toast here. For now, we'll just log it or maybe append to success message if we had one.
-                console.log(`AI extracted ${extractedCount} achievements!`);
-            }
+            // Achievements are extracted silently - could add toast notification later
 
             onSuccess();
             onClose();

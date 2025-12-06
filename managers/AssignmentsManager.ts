@@ -161,10 +161,6 @@ export class AssignmentsManager {
                 CourseGradesViewModel.getSuggestedWeights()
             );
 
-            console.log(`[AssignmentsManager] Updating grade for course ${courseId}`);
-            console.log(`[AssignmentsManager] Assignments count: ${assignments.length}`);
-            console.log(`[AssignmentsManager] Calculated grade: ${gradeBreakdown.calculatedGrade}, Total weight: ${gradeBreakdown.totalWeightUsed}`);
-
             // 3. Update course
             const { CoursesRepository } = await import("@/lib/supabase/repositories/courses.repository");
             const coursesRepo = new CoursesRepository();
@@ -174,7 +170,6 @@ export class AssignmentsManager {
                 await coursesRepo.update(courseId, {
                     grade: gradeBreakdown.calculatedGrade
                 });
-                console.log(`[AssignmentsManager] Course grade updated to ${gradeBreakdown.calculatedGrade}`);
             } else {
                 // If no graded assignments, maybe set to null?
                 // For now, let's leave it or set to null if that's supported
